@@ -1,7 +1,0 @@
-server:
-  address: "server:12345"
-loop:
-  amount: 3
-  period: "50ms"
-batch:
-  maxAmount: 10
