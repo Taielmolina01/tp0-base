@@ -1,5 +1,5 @@
 import sys 
-import * from aux
+from aux import *
 
 EXPECTED_AMOUNT_OF_ARGUMENTS = 2
 MSG_WRONG_AMOUNT_OF_ARGUMENTS = f"""Bad amount of arguments. 
