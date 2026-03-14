@@ -47,8 +47,8 @@ def get_network_lines() -> [str]:
 def get_volumes_lines() -> [str]:
     return [
         "volumes:\n",
-        "  server_config\n",
-        "  client_config\n"
+        "  server_config:\n",
+        "  client_config:\n"
     ]
 
 def generate_compose_file(output_file: str, amount_of_clients: int):
