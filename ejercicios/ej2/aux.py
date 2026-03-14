@@ -12,7 +12,7 @@ def get_server_lines() -> [str]:
         "    networks:\n",
         "      - testing_net\n",
         "    volumes:\n",
-        "      - server_config:/config\n\n"
+        "      - ./server/config.ini:/config\n\n"
     ]
 
 def get_client_lines(
@@ -29,7 +29,7 @@ def get_client_lines(
         "    networks:\n",
         "      - testing_net\n",
         "    volumes:\n",
-        "      - client_config:/config\n",
+        "      - ./client/config.yaml:/config\n",
         "    depends_on:\n",
         "      - server\n\n"
     ]

@@ -15,6 +15,8 @@ import (
 
 var log = logging.MustGetLogger("log")
 
+const CONFIG_FILE_PATH = "./config/config.yaml"
+
 // InitConfig Function that uses viper library to parse configuration parameters.
 // Viper is configured to read variables from both environment variables and the
 // config file ./config.yaml. Environment variables takes precedence over parameters
@@ -42,7 +44,7 @@ func InitConfig() (*viper.Viper, error) {
 	// does not exists then ReadInConfig will fail but configuration
 	// can be loaded from the environment variables so we shouldn't
 	// return an error in that case
-	v.SetConfigFile("./config/config.yaml")
+	v.SetConfigFile(CONFIG_FILE_PATH)
 	if err := v.ReadInConfig(); err != nil {
 		fmt.Printf("Configuration could not be read from config file. Using env variables instead")
 	}
