@@ -10,9 +10,9 @@ def get_server_lines() -> [str]:
         "      - PYTHONUNBUFFERED=1\n",
         "      - LOGGING_LEVEL=DEBUG\n",
         "    networks:\n",
-        "      - testing_net\n\n",
-        "    volumes:",
-        "      - server_config:/config"
+        "      - testing_net\n",
+        "    volumes:\n",
+        "      - server_config:/config\n\n"
     ]
 
 def get_client_lines(
@@ -28,8 +28,8 @@ def get_client_lines(
         "      - CLI_LOG_LEVEL=DEBUG\n",
         "    networks:\n",
         "      - testing_net\n",
-        "    volumes:",
-        "      - client_config:/config",
+        "    volumes:\n",
+        "      - client_config:/config\n",
         "    depends_on:\n",
         "      - server\n\n"
     ]
@@ -41,14 +41,14 @@ def get_network_lines() -> [str]:
         "    ipam:\n",
         "      driver: default\n",
         "      config:\n",
-        "        - subnet: 172.25.125.0/24\n"
+        "        - subnet: 172.25.125.0/24\n\n"
     ]
 
 def get_volumes_lines() -> [str]:
     return [
-        "volumes:",
-        "  server_config",
-        "  client_config"
+        "volumes:\n",
+        "  server_config\n",
+        "  client_config\n"
     ]
 
 def generate_compose_file(output_file: str, amount_of_clients: int):
