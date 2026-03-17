@@ -61,8 +61,11 @@ class Server:
         return c
 
     def __handle_exit(self):
-        this.client_socket.shutdown()
-        this.client_socket.close()
+        if this.client_socket:
+            this.client_socket.shutdown()
+            this.client_socket.close()
+            logging.info("Closing client socket from server ...")
         self._server_socket.shutdown()
         self._server_socket.close()
+        logging.info("Closing acceptor socket ...")
         sys.exit(0)

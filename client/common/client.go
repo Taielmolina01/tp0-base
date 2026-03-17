@@ -90,4 +90,5 @@ func (c *Client) StartClientLoop() {
 
 func (c *Client) CloseGracefully() {
 	c.conn.Close()
+	log.Info("Closing client socket ...")
 }
