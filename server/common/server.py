@@ -36,11 +36,12 @@ class Server:
         """
         try:
             # TODO: Modify the receive to avoid short-reads
-            msg = this.client_socket.recv(1024).rstrip().decode('utf-8')
-            if not msg:
+            data = self.client_socket.recv(1024)
+            if not data:
                 print("Client has disconnected. Closing socket")
                 self.__close_client_socket()
                 return
+            msg = data.rstrip().decode('utf-8')
             addr = self.client_socket.getpeername()
             logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {msg}')
             # TODO: Modify the send to avoid short-writes
