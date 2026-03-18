@@ -65,7 +65,7 @@ class Server:
         logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
         return c
 
-    def __handle_exit(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.__close_client_socket()
         self._server_socket.shutdown()
         self._server_socket.close()
