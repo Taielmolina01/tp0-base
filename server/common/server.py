@@ -9,7 +9,7 @@ class Server:
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
-        signal.signal(signal.SIGTERM, self.__handle_exit)
+        signal.signal(signal.SIGTERM, self.__exit__)
         self.client_socket = None
 
     def run(self):
