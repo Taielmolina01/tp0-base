@@ -24,7 +24,7 @@ class Server:
         # TODO: Modify this program to handle signal to graceful shutdown
         # the server
         while True:
-            this.client_socket = self.__accept_new_connection()
+            self.client_socket = self.__accept_new_connection()
             self.__handle_client_connection()
 
     def __handle_client_connection(self):
@@ -37,14 +37,18 @@ class Server:
         try:
             # TODO: Modify the receive to avoid short-reads
             msg = this.client_socket.recv(1024).rstrip().decode('utf-8')
-            addr = this.client_socket.getpeername()
+            if not msg:
+                print("Client has disconnected. Closing socket")
+                self.__close_client_socket()
+                return
+            addr = self.client_socket.getpeername()
             logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {msg}')
             # TODO: Modify the send to avoid short-writes
-            this.client_socket.send("{}\n".format(msg).encode('utf-8'))
+            self.client_socket.send("{}\n".format(msg).encode('utf-8'))
         except OSError as e:
             logging.error("action: receive_message | result: fail | error: {e}")
         finally:
-            this.client_socket.close()
+            self.client_socket.close()
 
     def __accept_new_connection(self):
         """
@@ -61,11 +65,14 @@ class Server:
         return c
 
     def __handle_exit(self):
-        if this.client_socket:
-            this.client_socket.shutdown()
-            this.client_socket.close()
-            logging.info("Closing client socket from server ...")
+        self.__close_client_socket()
         self._server_socket.shutdown()
         self._server_socket.close()
         logging.info("Closing acceptor socket ...")
         sys.exit(0)
+
+    def __close_client_socket(self):
+        if self.client_socket:
+            self.client_socket.shutdown()
+            self.client_socket.close()
+            logging.info("Closing client socket from server ...")
