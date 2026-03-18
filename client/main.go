@@ -123,6 +123,7 @@ func main() {
 	go func() {
 		<-signals
 		client.CloseGracefully()
+		os.Exit(0)
 	}()
 
 	client.StartClientLoop()
