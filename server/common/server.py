@@ -9,7 +9,7 @@ class Server:
         self._server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._server_socket.bind(('', port))
         self._server_socket.listen(listen_backlog)
-        signal.signal(signal.SIGTERM, self.__exit__)
+        signal.signal(signal.SIGTERM, self.__handle_exit)
         self.client_socket = None
 
     def run(self):
@@ -66,9 +66,9 @@ class Server:
             logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
             return c
         except InterruptedError:
-            self.__exit__()
+            self.__handle_exit()
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __handle_exit(self):
         self.__close_client_socket()
         self.__close_acceptor_socket()
         sys.exit(0)
