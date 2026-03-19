@@ -60,20 +60,26 @@ class Server:
         """
 
         # Connection arrived
-        logging.info('action: accept_connections | result: in_progress')
-        c, addr = self._server_socket.accept()
-        logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
-        return c
+        try: 
+            logging.info('action: accept_connections | result: in_progress')
+            c, addr = self._server_socket.accept()
+            logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
+            return c
+        finally:
+            self.__close_acceptor_socket()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.__close_client_socket()
+        sys.exit(0)
+
+    def __close_acceptor_socket(self):
         self._server_socket.shutdown()
         self._server_socket.close()
         logging.info("Closing acceptor socket ...")
-        sys.exit(0)
 
     def __close_client_socket(self):
         if self.client_socket:
             self.client_socket.shutdown()
             self.client_socket.close()
             logging.info("Closing client socket from server ...")
+            self.client_socket = None
