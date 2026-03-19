@@ -6,9 +6,9 @@ import sys
 class Server:
     def __init__(self, port, listen_backlog):
         # Initialize server socket
-        self.__server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__server_socket.bind(('', port))
-        self.__server_socket.listen(listen_backlog)
+        self.__acceptor_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__acceptor_socket.bind(('', port))
+        self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
         self.__client_socket = None
 
@@ -62,12 +62,12 @@ class Server:
         # Connection arrived
         try:
             logging.info('action: accept_connections | result: in_progress')
-            c, addr = self.__server_socket.accept()
+            c, addr = self.__acceptor_socket.accept()
             logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
             return c
-        except Exception:
+        except OSError:
             self.__handle_exit()
-            
+
     def __handle_exit(self):
         self.__close_client_socket()
         self.__close_acceptor_socket()
@@ -77,8 +77,8 @@ class Server:
         self.__handle_exit()
 
     def __close_acceptor_socket(self):
-        self.__server_socket.shutdown(socket.SHUT_RDWR)
-        self.__server_socket.close()
+        self.__acceptor_socket.shutdown(socket.SHUT_RDWR)
+        self.__acceptor_socket.close()
         logging.info("Closing acceptor socket ...")
 
     def __close_client_socket(self):
