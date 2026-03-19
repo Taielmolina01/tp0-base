@@ -60,13 +60,13 @@ class Server:
         """
 
         # Connection arrived
-        try: 
+        try:
             logging.info('action: accept_connections | result: in_progress')
             c, addr = self._server_socket.accept()
             logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
             return c
-        finally:
-            self.__close_acceptor_socket()
+        except InterruptedError:
+            self.__exit__()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.__close_client_socket()
