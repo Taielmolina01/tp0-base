@@ -70,6 +70,7 @@ class Server:
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.__close_client_socket()
+        self.__close_acceptor_socket()
         sys.exit(0)
 
     def __close_acceptor_socket(self):
