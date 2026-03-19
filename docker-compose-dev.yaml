@@ -4,8 +4,6 @@ services:
     container_name: server
     image: server:latest
     entrypoint: python3 /main.py
-    ports:
-      - "5678:5678"
     environment:
       - PYTHONUNBUFFERED=1
     networks:
