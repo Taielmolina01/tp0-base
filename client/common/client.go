@@ -31,6 +31,7 @@ func NewClient(
 		id:         clientServerConfig.ID,
 		protocol:   protocol.CreateClientProtocol(clientServerConfig.ServerAddress, logger),
 		betInfo:    betInfo,
+		logger:     logger,
 	}
 	return client
 }
@@ -61,7 +62,7 @@ func (c *Client) StartClientLoop() {
 			)
 		}
 
-		_, err = c.protocol.ReceiveAckBet() // hago algo con la data?
+		_, err = c.protocol.ReceiveAckBet()
 
 		if err != nil {
 			c.logger.Criticalf(

@@ -13,7 +13,7 @@ class Server:
         self.__acceptor_socket.bind(('', port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
-        self.__client_socket = None
+        self.__protocol = None
 
     def run(self):
         """
@@ -24,7 +24,7 @@ class Server:
         finishes, servers starts to accept new connections again
         """ 
         while True:
-            self.__client_socket = self.__accept_new_connection()
+            self.__protocol = self.__accept_new_connection()
             self.__handle_client_connection()
 
     def __handle_client_connection(self):
@@ -35,10 +35,10 @@ class Server:
         client socket will also be closed
         """
         try:
-            data = self.__client_socket.receive_bet()
+            data = self.__protocol.receive_bet()
             store_bets([data])
             logging.info(f"action: apuesta_almacenada | result: success | dni: {data.document} | numero: {data.number}")            
-            self.__client_socket.send_ack_bet()
+            self.__protocol.send_ack_bet()
         except ConnectionError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
             logging.error("Client has disconnected. Closing socket")
@@ -77,7 +77,7 @@ class Server:
         logging.info("Closing acceptor socket ...")
 
     def __close_client_socket(self):
-        if self.__client_socket:
-            self.__client_socket.close()
+        if self.__protocol:
+            self.__protocol.close()
             logging.info("Closing client socket from server ...")
-            self.__client_socket = None
+            self.__protocol = None

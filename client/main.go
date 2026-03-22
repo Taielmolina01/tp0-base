@@ -121,7 +121,7 @@ func PrintConfig(v *viper.Viper) {
 		v.GetString("NAME"),
 		v.GetString("LAST_NAME"),
 		v.GetInt("DNI"),
-		v.GetTime("BIRTHDAY"),
+		v.GetTime("BIRTHDAY").Format("2006-01-02"),
 		v.GetInt("BET_NUMBER"),
 	)
 }

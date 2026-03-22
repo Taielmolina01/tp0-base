@@ -1,6 +1,9 @@
 package socket
 
-import "net"
+import (
+	"io"
+	"net"
+)
 
 type Socket interface {
 	SendAll([]byte) error
@@ -36,12 +39,18 @@ func (s *SocketImpl) SendAll(data []byte) error {
 }
 
 func (s *SocketImpl) ReceiveAll(length uint) ([]byte, error) {
-	data := []byte{}
+	data := make([]byte, length)
 	var received uint
 	for received < length {
-		n, err := s.conn.Read(data)
+		n, err := s.conn.Read(data[received:])
 		if err != nil {
+			if err == io.EOF {
+				return data[:received], io.ErrUnexpectedEOF
+			}
 			return data, err
+		}
+		if n == 0 {
+			return data[:received], io.ErrUnexpectedEOF
 		}
 		received += uint(n)
 	}
