@@ -1,4 +1,4 @@
-from common.socket.socket import Socket as skt
+from common.blocking_socket.blocking_socket import BlockingSocket
 from common.protocol.protocol import Protocol
 import socket
 import logging
@@ -8,7 +8,7 @@ import sys
 class Server:
     def __init__(self, port, listen_backlog):
         # Initialize server socket
-        self.__acceptor_socket = skt(socket.AF_INET, socket.SOCK_STREAM)
+        self.__acceptor_socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
         self.__acceptor_socket.bind(('', port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)

@@ -1,6 +1,6 @@
 import socket
 
-class Socket:
+class BlockingSocket:
     def __init__(self, address_family, socket_kind, sock=None):
         self.sock = sock if sock is not None else socket.socket(address_family, socket_kind)
 
@@ -16,7 +16,7 @@ class Socket:
 
     def accept(self):
         conn, addr = self.sock.accept()
-        return Socket.with_initialized_socket(conn), addr
+        return BlockingSocket.with_initialized_socket(conn), addr
 
     def send_all(self, data):
         sent = 0
@@ -33,7 +33,7 @@ class Socket:
             chunk = self.sock.recv(length - bytes_received)
             if chunk == b"":
                 raise ConnectionError("socket connection broken while receiving")
-            data .append(chunk)
+            data.append(chunk)
             bytes_received += len(chunk)
         return b"".join(data)
 
