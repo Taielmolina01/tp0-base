@@ -17,6 +17,11 @@ services:
     entrypoint: /client
     environment:
       - CLI_ID=1
+      - CLI_NAME=Santiago Leonel
+      - CLI_LAST_NAME=Lorca
+      - CLI_DNI=30904465
+      - CLI_BIRTHDAY=1999-03-17
+      - CLI_BET_NUMBER=7574
     networks:
       - testing_net
     volumes:

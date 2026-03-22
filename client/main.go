@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -13,11 +14,16 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common"
+	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/bet"
+	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/config"
 )
 
 var log = logging.MustGetLogger("log")
 
-const CONFIG_FILE_PATH = "./config/config.yaml"
+const (
+	CONFIG_FILE_PATH = "./config/config.yaml"
+	DATE_LAYOUT      = "2006-01-02"
+)
 
 // InitConfig Function that uses viper library to parse configuration parameters.
 // Viper is configured to read variables from both environment variables and the
@@ -29,7 +35,14 @@ func InitConfig() (*viper.Viper, error) {
 
 	// Configure viper to read env variables with the CLI_ prefix
 	v.AutomaticEnv()
-	v.SetEnvPrefix("cli")
+	v.SetEnvPrefix("CLI")
+
+	v.BindEnv("NAME")
+	v.BindEnv("LAST_NAME")
+	v.BindEnv("DNI")
+	v.BindEnv("BIRTHDAY")
+	v.BindEnv("BET_NUMBER")
+
 	// Use a replacer to replace env variables underscores with points. This let us
 	// use nested configurations in the config file and at the same time define
 	// env variables for the nested configurations
@@ -37,10 +50,10 @@ func InitConfig() (*viper.Viper, error) {
 
 	// Add env variables supported
 	v.BindEnv("id")
-	v.BindEnv("server", "address")
-	v.BindEnv("loop", "period")
-	v.BindEnv("loop", "amount")
-	v.BindEnv("log", "level")
+	v.BindEnv("server.address")
+	v.BindEnv("loop.period")
+	v.BindEnv("loop.amount")
+	v.BindEnv("log.level")
 
 	// Try to read configuration from config file. If config file
 	// does not exists then ReadInConfig will fail but configuration
@@ -55,6 +68,18 @@ func InitConfig() (*viper.Viper, error) {
 
 	if _, err := time.ParseDuration(v.GetString("loop.period")); err != nil {
 		return nil, errors.Wrapf(err, "Could not parse CLI_LOOP_PERIOD env var as time.Duration.")
+	}
+
+	if _, err := strconv.Atoi(v.GetString("DNI")); err != nil {
+		return nil, errors.Wrapf(err, "Could not parse CLI_DNI env var as integer")
+	}
+
+	if _, err := time.Parse(DATE_LAYOUT, v.GetString("BIRTHDAY")); err != nil {
+		return nil, errors.Wrapf(err, "Could not parse CLI_BIRTHDAY env var as time.Time")
+	}
+
+	if _, err := strconv.Atoi(v.GetString("BET_NUMBER")); err != nil {
+		return nil, errors.Wrapf(err, "Could not parse CLI_BET_NUMBER env var as integer")
 	}
 
 	return v, nil
@@ -92,33 +117,53 @@ func PrintConfig(v *viper.Viper) {
 		v.GetDuration("loop.period"),
 		v.GetString("log.level"),
 	)
+	log.Infof("action: client_config | result: success | client_name: %s | client_last_name: %s | client_dni: %v | client_birthday: %v | client_bet_number: %v",
+		v.GetString("NAME"),
+		v.GetString("LAST_NAME"),
+		v.GetInt("DNI"),
+		v.GetTime("BIRTHDAY"),
+		v.GetInt("BET_NUMBER"),
+	)
 }
 
 func main() {
 	v, err := InitConfig()
 	if err != nil {
 		log.Criticalf("%s", err)
+		os.Exit(1)
 	}
 
 	if err := InitLogger(v.GetString("log.level")); err != nil {
 		log.Criticalf("%s", err)
+		os.Exit(1)
 	}
 
 	// Print program config with debugging purposes
 	PrintConfig(v)
 
-	clientConfig := common.ClientConfig{
+	clientServerConfig := config.ClientServerConfig{
 		ServerAddress: v.GetString("server.address"),
 		ID:            v.GetString("id"),
-		LoopAmount:    v.GetInt("loop.amount"),
-		LoopPeriod:    v.GetDuration("loop.period"),
 	}
+
+	clientLoopConfig := config.ClientLoopConfig{
+		LoopAmount: v.GetInt("loop.amount"),
+		LoopPeriod: v.GetDuration("loop.period"),
+	}
+
+	bet := bet.CreateBet(
+		v.GetString("NAME"),
+		v.GetString("LAST_NAME"),
+		v.GetInt("DNI"),
+		v.GetInt("BET_NUMBER"),
+		v.GetTime("BIRTHDAY"),
+	)
 
 	signals := make(chan os.Signal, 1)
 
 	signal.Notify(signals, syscall.SIGTERM)
 
-	client := common.NewClient(clientConfig)
+	client := common.NewClient(clientServerConfig, clientLoopConfig, bet)
 
 	go func() {
 		<-signals

@@ -1,4 +1,4 @@
-def get_server_lines() -> [str]:
+def get_server_lines() -> list[str]:
     return [
         "name: tp0\n",
         "services:\n",
@@ -15,8 +15,9 @@ def get_server_lines() -> [str]:
     ]
 
 def get_client_lines(
-    client_number: int
-    ) -> [str]:
+    client_number: int,
+    client_config: dict[str, str]
+    ) -> list[str]:
     return [
         f"  client{client_number}:\n",
         f"    container_name: client{client_number}\n",
@@ -24,6 +25,11 @@ def get_client_lines(
         "    entrypoint: /client\n",
         "    environment:\n",
         f"      - CLI_ID={client_number}\n",
+        f"      - CLI_NAME={client_config["name"]}\n",
+        f"      - CLI_LAST_NAME={client_config["last_name"]}\n",
+        f"      - CLI_DNI={client_config["dni"]}\n",
+        f"      - CLI_BIRTHDAY={client_config["birthday"]}\n",
+        f"      - CLI_BET_NUMBER={client_config["bet_number"]}\n",
         "    networks:\n",
         "      - testing_net\n",
         "    volumes:\n",
@@ -32,7 +38,7 @@ def get_client_lines(
         "      - server\n\n"
     ]
 
-def get_network_lines() -> [str]:
+def get_network_lines() -> list[str]:
     return [
         "networks:\n",
         "  testing_net:\n",
@@ -42,19 +48,23 @@ def get_network_lines() -> [str]:
         "        - subnet: 172.25.125.0/24\n\n"
     ]
 
-def get_volumes_lines() -> [str]:
+def get_volumes_lines() -> list[str]:
     return [
         "volumes:\n",
         "  server_config:\n",
         "  client_config:\n"
     ]
 
-def generate_compose_file(output_file: str, amount_of_clients: int):
+def generate_compose_file(
+        output_file: str, 
+        amount_of_clients: int,
+        client_config: dict[str, str]
+        ):
     with open(output_file, 'w') as f:
         for line in get_server_lines():
             f.write(line)
         for i in range (1, amount_of_clients + 1):
-            for line in get_client_lines(i):
+            for line in get_client_lines(i, client_config):
                 f.write(line)
         for line in get_network_lines():
             f.write(line)        
