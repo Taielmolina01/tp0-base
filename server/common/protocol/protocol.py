@@ -1,4 +1,5 @@
 from common.blocking_socket.blocking_socket import BlockingSocket
+from common.utils import Bet
 import socket
 
 ACK_CODE = 0x03
@@ -15,8 +16,13 @@ class Protocol:
     def receive_bet(self):
         _ = self.socket.receive_all(1)
         length = int.from_bytes(self.socket.receive_all(2), byteorder='big')
-        bet = self.socket.receive_all(length)
-        return bet
+        bet_msg = self.socket.receive_all(length)
+        return self.__create_bet(str(bet_msg))
+
+    def __create_bet(self, msg):
+        real_msg = msg[2:len(msg)-2]
+        fields = real_msg.split(',')
+        return Bet(0, fields[0], fields[1], fields[2], fields[3], fields[4])
 
     def send_ack_bet(self):
         self.socket.send_all(bytes([ACK_CODE]))

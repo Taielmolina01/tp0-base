@@ -29,11 +29,19 @@ func CreateBet(
 
 func (b Bet) String() string {
 	return fmt.Sprintf(
-		"{name: %s, lastName: %s, dni: %v, birthday: %v, number: %v}",
+		"{%s,%s,%v,%v,%v}",
 		b.name,
 		b.lastName,
 		b.dni,
-		b.birthday,
+		b.birthday.Format("2006-01-02"),
 		b.betNumber,
 	)
+}
+
+func (b Bet) GetDNI() int {
+	return b.dni
+}
+
+func (b Bet) GetBetNumber() int {
+	return b.betNumber
 }

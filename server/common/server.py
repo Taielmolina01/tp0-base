@@ -4,6 +4,7 @@ import socket
 import logging
 import signal
 import sys
+from common.utils import store_bets
 
 class Server:
     def __init__(self, port, listen_backlog):
@@ -35,9 +36,8 @@ class Server:
         """
         try:
             data = self.__client_socket.receive_bet()
-            msg = data.rstrip().decode('utf-8')
-            addr = self.__client_socket.getpeername()
-            logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {msg}')
+            store_bets([data])
+            logging.info(f"action: apuesta_almacenada | result: success | dni: {data.document} | numero: {data.number}")            
             self.__client_socket.send_ack_bet()
         except ConnectionError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")

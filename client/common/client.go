@@ -71,6 +71,12 @@ func (c *Client) StartClientLoop() {
 			)
 		}
 
+		c.logger.Infof(
+			"action: apuesta_enviada | result: success | dni: %v | numero: %v",
+			c.betInfo.GetDNI(),
+			c.betInfo.GetBetNumber(),
+		)
+
 		err = c.protocol.Exit()
 
 		if err != nil {
