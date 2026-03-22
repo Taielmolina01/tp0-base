@@ -1,5 +1,5 @@
-from common.socket import Socket as skt
-from common.socket import with_initialized_socket
+from common.socket.socket import Socket as skt
+from common.protocol.protocol import Protocol
 import socket
 import logging
 import signal
@@ -60,7 +60,7 @@ class Server:
             logging.info('action: accept_connections | result: in_progress')
             c, addr = self.__acceptor_socket.accept()
             logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
-            return with_initialized_socket(c)
+            return Protocol(c)
         except OSError:
             self.__handle_exit()
 

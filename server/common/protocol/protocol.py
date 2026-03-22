@@ -1,11 +1,11 @@
-from common.socket import Socket
+from common.socket.socket import Socket as skt
 import socket
 
 ACK_CODE = 0x03
 
 class Protocol:
     def __init__(self):
-        self.socket = Socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = skt(socket.AF_INET, socket.SOCK_STREAM)
 
     def receive_bet(self):
         _ = self.socket.receive_all(1)
