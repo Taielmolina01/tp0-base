@@ -1,8 +1,10 @@
 from common.blocking_socket.blocking_socket import BlockingSocket
 from common.utils import Bet
 import socket
+from common.protocol.eoc_exception import EndOfCommunicationException
 
 ACK_CODE = 0x03
+FIN_CODE = 0x05
 
 class Protocol:
     def __init__(self, sock=None):
@@ -13,8 +15,13 @@ class Protocol:
         else:
             self.socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
 
-    def receive_bet(self):
-        _ = self.socket.receive_all(1)
+    def receive_operation(self):
+        code = self.socket.receive_all(1)
+        if code == FIN_CODE:
+            raise EndOfCommunicationException()
+        return self.__receive_bet()
+    
+    def __receive_bet(self):
         length = int.from_bytes(self.socket.receive_all(2), byteorder='big')
         bet_msg = self.socket.receive_all(length)
         return self.__create_bet(str(bet_msg))

@@ -1,0 +1,2 @@
+class EndOfCommunicationException(Exception):
+    pass

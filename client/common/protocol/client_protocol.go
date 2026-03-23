@@ -11,6 +11,7 @@ import (
 const (
 	SEND_BET_CODE = 0x01
 	ACK_CODE      = 0x03
+	FIN_CODE      = 0x05
 )
 
 // Types and creation function of the protocol
@@ -78,6 +79,7 @@ func (c *ClientProtocolImpl) sendBigEndianNumber(number int) error {
 }
 
 func (c *ClientProtocolImpl) Exit() error {
+	c.socket.SendAll([]byte{FIN_CODE})
 	if err := c.socket.Close(); err != nil {
 		return err
 	}
