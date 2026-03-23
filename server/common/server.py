@@ -1,19 +1,17 @@
 from common.blocking_socket.blocking_socket import BlockingSocket
-from common.protocol.protocol import Protocol
+from common.client_handler.client_handler import ClientHandler
 import socket
 import logging
 import signal
 import sys
-from common.utils import store_bets
 
 class Server:
     def __init__(self, port, listen_backlog):
-        # Initialize server socket
         self.__acceptor_socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
         self.__acceptor_socket.bind(('', port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
-        self.__protocol = None
+        self.__client_handler = None
 
     def run(self):
         """
@@ -24,28 +22,9 @@ class Server:
         finishes, servers starts to accept new connections again
         """ 
         while True:
-            self.__protocol = self.__accept_new_connection()
-            self.__handle_client_connection()
-
-    def __handle_client_connection(self):
-        """
-        Read message from a specific client socket and closes the socket
-
-        If a problem arises in the communication with the client, the
-        client socket will also be closed
-        """
-        try:
-            data = self.__protocol.receive_bet()
-            store_bets([data])
-            logging.info(f"action: apuesta_almacenada | result: success | dni: {data.document} | numero: {data.number}")            
-            self.__protocol.send_ack_bet()
-        except ConnectionError as e:
-            logging.error(f"action: receive_message | result: fail | error: {e}")
-            logging.error("Client has disconnected. Closing socket")
-        except OSError as e:
-            logging.error(f"action: receive_message | result: fail | error: {e}")
-        finally:
-            self.__close_client_socket()
+            skt = self.__accept_new_connection()
+            self.__client_handler = ClientHandler(skt)
+            self.__client_handler.run()
 
     def __accept_new_connection(self):
         """
@@ -60,12 +39,13 @@ class Server:
             logging.info('action: accept_connections | result: in_progress')
             c, addr = self.__acceptor_socket.accept()
             logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
-            return Protocol(c)
+            return c
         except OSError:
             self.__handle_exit()
 
     def __handle_exit(self):
-        self.__close_client_socket()
+        if self.__client_handler:
+            self.__client_handler.close()
         self.__close_acceptor_socket()
         sys.exit(0)
 
@@ -76,8 +56,3 @@ class Server:
         self.__acceptor_socket.close()
         logging.info("Closing acceptor socket ...")
 
-    def __close_client_socket(self):
-        if self.__protocol:
-            self.__protocol.close()
-            logging.info("Closing client socket from server ...")
-            self.__protocol = None
