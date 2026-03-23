@@ -23,7 +23,7 @@ class ClientHandler:
         except OSError as e:
             logging.error(f"action: receive_message | result: fail | error: {e}")
         finally:
-            self.__close_client_socket()
+            self.close()
 
     def close(self):
         self.__protocol.close()

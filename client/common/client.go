@@ -40,17 +40,18 @@ func NewClient(
 func (c *Client) StartClientLoop() {
 	// There is an autoincremental msgID to identify every message sent
 	// Messages if the message amount threshold has not been surpassed
-	err := c.protocol.CreateClientSocket()
-	if err != nil {
-		c.logger.Criticalf(
-			"action: create_socket | result: fail | client_id: %v | error: %v",
-			c.id,
-			err,
-		)
-	}
 
 	for msgID := 1; msgID <= c.loopConfig.LoopAmount; msgID++ {
 		// Create the connection the server in every loop iteration. Send an
+		err := c.protocol.CreateClientSocket()
+		if err != nil {
+			c.logger.Criticalf(
+				"action: create_socket | result: fail | client_id: %v | error: %v",
+				c.id,
+				err,
+			)
+		}
+
 		err = c.protocol.SendBet(c.betInfo)
 
 		if err != nil {
@@ -65,7 +66,7 @@ func (c *Client) StartClientLoop() {
 
 		if err != nil {
 			c.logger.Criticalf(
-				"action: receive_bet | result: fail | client_id: %v | error: %v",
+				"action: receive_bet_ack | result: fail | client_id: %v | error: %v",
 				c.id,
 				err,
 			)
@@ -82,19 +83,19 @@ func (c *Client) StartClientLoop() {
 		// 	msg,
 		// )
 
+		err = c.protocol.Exit()
+
+		if err != nil {
+			c.logger.Criticalf(
+				"action: exit_protocol | result: fail | client_id: %v | error: %v",
+				c.id,
+				err,
+			)
+		}
+
 		// Wait a time between sending one message and the next one
 		time.Sleep(c.loopConfig.LoopPeriod)
 
-	}
-
-	err = c.protocol.Exit()
-
-	if err != nil {
-		c.logger.Criticalf(
-			"action: exit_protocol | result: fail | client_id: %v | error: %v",
-			c.id,
-			err,
-		)
 	}
 
 	c.logger.Infof("action: loop_finished | result: success | client_id: %v", c.id)
