@@ -34,6 +34,7 @@ def get_client_lines(
         "      - testing_net\n",
         "    volumes:\n",
         "      - ./client/config.yaml:/config/config.yaml\n",
+        f"      - ./.data/agency-{client_number}.csv:/.data/agency-{client_number}\n",
         "    depends_on:\n",
         "      - server\n\n"
     ]

@@ -15,6 +15,7 @@ const (
 	_DNI_FIELD_INDEX       = 2
 	_BIRTHDATE_FIELD_INDEX = 3
 	_BETNUMBER_FIELD_INDEX = 4
+	_DATA_FILEPATH         = ".data/agency-%d"
 )
 
 type BetsReader interface {
@@ -28,7 +29,7 @@ type betsReaderImpl struct {
 func CreateBetsReader(
 	agencyNumber int,
 ) (BetsReader, error) {
-	file, err := os.Open(fmt.Sprintf("../../../.data/agency-%d.csv", agencyNumber))
+	file, err := os.Open(fmt.Sprintf(_DATA_FILEPATH, agencyNumber))
 	if err != nil {
 		return nil, err
 	}
