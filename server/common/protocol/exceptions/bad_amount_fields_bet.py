@@ -1,0 +1,2 @@
+class BadAmountOfFieldsInBet(Exception):
+    pass

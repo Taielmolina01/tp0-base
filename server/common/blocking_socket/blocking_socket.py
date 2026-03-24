@@ -1,8 +1,11 @@
 import socket
 
+
 class BlockingSocket:
     def __init__(self, address_family, socket_kind, sock=None):
-        self.sock = sock if sock is not None else socket.socket(address_family, socket_kind)
+        self.sock = (
+            sock if sock is not None else socket.socket(address_family, socket_kind)
+        )
 
     @classmethod
     def with_initialized_socket(cls, sock):

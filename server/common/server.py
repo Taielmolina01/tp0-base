@@ -5,10 +5,11 @@ import logging
 import signal
 import sys
 
+
 class Server:
     def __init__(self, port, listen_backlog):
         self.__acceptor_socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__acceptor_socket.bind(('', port))
+        self.__acceptor_socket.bind(("", port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
         self.__client_handler = None
@@ -20,7 +21,7 @@ class Server:
         Server that accept a new connections and establishes a
         communication with a client. After client with communucation
         finishes, servers starts to accept new connections again
-        """ 
+        """
         while True:
             skt = self.__accept_new_connection()
             self.__client_handler = ClientHandler(skt)
@@ -36,9 +37,11 @@ class Server:
 
         # Connection arrived
         try:
-            logging.info('action: accept_connections | result: in_progress')
+            logging.info("action: accept_connections | result: in_progress")
             c, addr = self.__acceptor_socket.accept()
-            logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
+            logging.info(
+                f"action: accept_connections | result: success | ip: {addr[0]}"
+            )
             return c
         except OSError:
             self.__handle_exit()
@@ -55,5 +58,3 @@ class Server:
     def __close_acceptor_socket(self):
         self.__acceptor_socket.close()
         logging.info("Closing acceptor socket ...")
-
-    

@@ -10,12 +10,11 @@ def get_server_lines() -> str:
         "      - PYTHONUNBUFFERED=1\n",
         "      - LOGGING_LEVEL=DEBUG\n",
         "    networks:\n",
-        "      - testing_net\n\n"
+        "      - testing_net\n\n",
     ]
 
-def get_client_lines(
-    client_number: int
-    ) -> str:
+
+def get_client_lines(client_number: int) -> str:
     return [
         f"  client{client_number}:\n",
         f"    container_name: client{client_number}\n",
@@ -27,8 +26,9 @@ def get_client_lines(
         "    networks:\n",
         "      - testing_net\n",
         "    depends_on:\n",
-        "      - server\n\n"
+        "      - server\n\n",
     ]
+
 
 def get_network_lines() -> str:
     return [
@@ -37,5 +37,5 @@ def get_network_lines() -> str:
         "    ipam:\n",
         "      driver: default\n",
         "      config:\n",
-        "        - subnet: 172.25.125.0/24\n"
+        "        - subnet: 172.25.125.0/24\n",
     ]

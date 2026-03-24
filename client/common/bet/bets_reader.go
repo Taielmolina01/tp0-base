@@ -20,11 +20,13 @@ const (
 )
 
 type BetsReader interface {
-	ReadChunk() ([]Bet, error)
+	ReadChunk() ([]BetDto, error)
 }
 
 type betsReaderImpl struct {
-	reader *csv.Reader
+	reader       *csv.Reader
+	buffered     []BetDto
+	agencyNumber int
 }
 
 func CreateBetsReader(
@@ -37,11 +39,18 @@ func CreateBetsReader(
 
 	reader := csv.NewReader(file)
 
-	return &betsReaderImpl{reader: reader}, nil
+	return &betsReaderImpl{
+		reader:       reader,
+		agencyNumber: agencyNumber,
+	}, nil
 }
 
-func (b *betsReaderImpl) ReadChunk() ([]Bet, error) {
-	result := []Bet{}
+func (b *betsReaderImpl) ReadChunk() ([]BetDto, error) {
+	result := []BetDto{}
+	if len(b.buffered) > 0 {
+		result = append(result, b.buffered...)
+		b.buffered = b.buffered[:0]
+	}
 	for read := 0; read < _CHUNK_SIZE; {
 		actualRow, err := b.reader.Read()
 
@@ -71,15 +80,19 @@ func (b *betsReaderImpl) ReadChunk() ([]Bet, error) {
 			return nil, fmt.Errorf("invalid birthdate %q: %w", birthdateStr, err)
 		}
 
-		actualBet := CreateBet(
-			name,
-			lastName,
-			dni,
-			betNumber,
-			birthdate,
-		)
+		actualBet := BetDto{
+			b.agencyNumber,
+			CreateBet(
+				name,
+				lastName,
+				dni,
+				betNumber,
+				birthdate,
+			),
+		}
 
 		if read+len([]byte(actualBet.String())) > _CHUNK_SIZE {
+			b.buffered = append(b.buffered, actualBet)
 			break
 		}
 
