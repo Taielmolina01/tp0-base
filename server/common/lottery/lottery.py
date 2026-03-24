@@ -1,4 +1,6 @@
 from common.utils import has_won, load_bets
+import logging
+
 AMOUNT_OF_AGENCIES = 5
 
 class Agency:
@@ -33,7 +35,14 @@ class Lottery:
             if not has_won(bet):
                 continue
             document = int(bet.document)
+            logging.info(
+                f"actual_bet: {bet}"
+            )
+            logging.info(
+                f"agencies_state: {self.agencies}"
+            )
             for agency in self.agencies.values():
+
                 if agency.bets[document]:
                     agency.winners.append(document)
         return True
