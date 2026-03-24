@@ -18,7 +18,7 @@ const (
 
 type ClientProtocol interface {
 	CreateClientSocket() error
-	SendBets([]bet.Bet) error
+	SendBets([]bet.BetDto) error
 	ReceiveAckBet() (string, error)
 	Exit() error
 }
@@ -48,7 +48,7 @@ func (c *ClientProtocolImpl) CreateClientSocket() error {
 	return nil
 }
 
-func (c *ClientProtocolImpl) SendBets(bets []bet.Bet) error {
+func (c *ClientProtocolImpl) SendBets(bets []bet.BetDto) error {
 	err := c.socket.SendAll([]byte{SEND_BET_CODE})
 
 	if err != nil {
@@ -70,7 +70,7 @@ func (c *ClientProtocolImpl) SendBets(bets []bet.Bet) error {
 	return nil
 }
 
-func (c *ClientProtocolImpl) sendBet(bet bet.Bet) error {
+func (c *ClientProtocolImpl) sendBet(bet bet.BetDto) error {
 	err := c.sendBigEndianNumber(len(bet.String()))
 	if err != nil {
 		return err
