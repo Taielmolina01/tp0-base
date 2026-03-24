@@ -5,6 +5,7 @@ from common.protocol.exceptions.eoc_exception import EndOfCommunicationException
 from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
+import logging
 
 ACK_CODE = 0x03
 FIN_CODE = 0x05

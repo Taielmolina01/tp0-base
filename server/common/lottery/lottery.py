@@ -11,7 +11,7 @@ class Agency:
         self.bets = {} 
 
     def __repr__(self):
-        return f"{{\nid: {self.id}\nwinners: {self.winners}\nbets: {self.bets}}}"
+        return f"{{id: {self.id}; winners: {self.winners}; bets: {self.bets}}}"
 
 class Lottery:
     def __init__(self, amount_of_agencies=AMOUNT_OF_AGENCIES):
@@ -38,15 +38,8 @@ class Lottery:
             if not has_won(bet):
                 continue
             document = int(bet.document)
-            logging.info(
-                f"actual_bet: {bet}"
-            )
-            logging.info(
-                f"agencies_state: {self.agencies}"
-            )
             for agency in self.agencies.values():
-
-                if agency.bets[document]:
+                if agency.bets[document] and agency.id == bet.agency:
                     agency.winners.append(document)
         return True
     
