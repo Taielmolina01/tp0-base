@@ -31,6 +31,8 @@ class Server:
             if self.lottery.check_finished():
                 for client_handler in self.__client_handlers:
                     client_handler.inform_agency_result()
+                self.__handle_exit()
+
 
     def __accept_new_connection(self):
         """
@@ -52,8 +54,9 @@ class Server:
             self.__handle_exit()
 
     def __handle_exit(self):
-        if self.__client_handler:
-            self.__client_handler.close()
+        for client_handler in self.__client_handlers:
+            client_handler.close()
+        self.__client_handlers = []
         self.__close_acceptor_socket()
         sys.exit(0)
 
