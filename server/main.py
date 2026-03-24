@@ -23,6 +23,8 @@ def initialize_config():
     # If config.ini does not exists original config object is not modified
     config.read(CONFIG_FILE_PATH)
 
+    
+
     config_params = {}
     try:
         config_params["port"] = int(
@@ -35,6 +37,9 @@ def initialize_config():
         )
         config_params["logging_level"] = os.getenv(
             "LOGGING_LEVEL", config["DEFAULT"]["LOGGING_LEVEL"]
+        )
+        config_params["amount_of_clients"] = int(
+            os.getenv("AMOUNT_OF_CLIENTS", config["DEFAULT"]["AMOUNT_OF_CLIENTS"])
         )
     except KeyError as e:
         raise KeyError("Key was not found. Error: {} .Aborting server".format(e))
@@ -51,6 +56,7 @@ def main():
     logging_level = config_params["logging_level"]
     port = config_params["port"]
     listen_backlog = config_params["listen_backlog"]
+    amount_of_clients = config_params["amount_of_clients"]
 
     initialize_log(logging_level)
 
@@ -58,11 +64,12 @@ def main():
     # of the component
     logging.debug(
         f"action: config | result: success | port: {port} | "
-        f"listen_backlog: {listen_backlog} | logging_level: {logging_level}"
+        f"listen_backlog: {listen_backlog} | logging_level: {logging_level} | "
+        f"amount_of_clients: {amount_of_clients}"
     )
 
     # Initialize server and start server loop
-    server = Server(port, listen_backlog)
+    server = Server(port, listen_backlog, amount_of_clients)
     server.run()
 
 

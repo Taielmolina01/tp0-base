@@ -8,13 +8,13 @@ import sys
 
 
 class Server:
-    def __init__(self, port, listen_backlog):
+    def __init__(self, port, listen_backlog, amount_of_clients):
         self.__acceptor_socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
         self.__acceptor_socket.bind(("", port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
-        self.__client_handlers = []
-        self.lottery = Lottery()
+        self.__client_handlers : list[ClientHandler] = []
+        self.lottery = Lottery(amount_of_clients)
 
     def run(self):
         """
@@ -29,8 +29,10 @@ class Server:
             self.__client_handlers.append(ClientHandler(skt, self.lottery))
             self.__client_handlers[-1].run()
             if self.lottery.check_finished():
+                print("entro al if")
                 for client_handler in self.__client_handlers:
                     client_handler.inform_agency_result()
+                logging.info("action: sorteo | result: success")
                 self.__handle_exit()
 
     def __accept_new_connection(self):

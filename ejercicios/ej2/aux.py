@@ -1,4 +1,6 @@
-def get_server_lines() -> list[str]:
+def get_server_lines(
+        amount_of_clients: int
+) -> list[str]:
     return [
         "name: tp0\n",
         "services:\n",
@@ -8,6 +10,7 @@ def get_server_lines() -> list[str]:
         "    entrypoint: python3 /main.py\n",
         "    environment:\n",
         "      - PYTHONUNBUFFERED=1\n",
+        f"      - AMOUNT_OF_CLIENTS={amount_of_clients}\n"
         "    networks:\n",
         "      - testing_net\n",
         "    volumes:\n",
@@ -55,7 +58,7 @@ def generate_compose_file(
     amount_of_clients: int,
 ):
     with open(output_file, "w") as f:
-        for line in get_server_lines():
+        for line in get_server_lines(amount_of_clients):
             f.write(line)
         for i in range(1, amount_of_clients + 1):
             for line in get_client_lines(i):

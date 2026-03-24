@@ -9,8 +9,8 @@ class Agency:
         self.bets = {}
 
 class Lottery:
-    def __init__(self):
-        self.amount_of_agencies = AMOUNT_OF_AGENCIES
+    def __init__(self, amount_of_agencies=AMOUNT_OF_AGENCIES):
+        self.amount_of_agencies = amount_of_agencies
         self.agencies = {i: Agency(i) for i in range(1, self.amount_of_agencies+1)}
         self.amount_of_agencies_ready = 0
 
