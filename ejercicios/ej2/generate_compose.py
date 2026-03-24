@@ -1,7 +1,7 @@
 import sys 
 from aux import generate_compose_file
 
-EXPECTED_AMOUNT_OF_ARGUMENTS = 7
+EXPECTED_AMOUNT_OF_ARGUMENTS = 2
 MSG_WRONG_AMOUNT_OF_ARGUMENTS = f"""Bad amount of arguments. 
         This program must be called with {EXPECTED_AMOUNT_OF_ARGUMENTS} arguments.
         Example: 'python3 generate_compose.py ${{output_file}} ${{amount_of_clients}} ${{client_name}} ${{client_last_name}} ${{client_dni}} ${{client_birthday}} ${{client_bet_number}}'"""

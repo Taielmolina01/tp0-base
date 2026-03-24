@@ -28,7 +28,7 @@ def get_client_lines(
         "      - testing_net\n",
         "    volumes:\n",
         "      - ./client/config.yaml:/config/config.yaml\n",
-        f"      - ./.data/agency-{client_number}.csv:/.data/agency-{client_number}\n",
+        f"      - ./.data/agency-{client_number}.csv:/.data/agency-{client_number}.csv\n",
         "    depends_on:\n",
         "      - server\n\n"
     ]
@@ -53,13 +53,12 @@ def get_volumes_lines() -> list[str]:
 def generate_compose_file(
         output_file: str, 
         amount_of_clients: int,
-        client_config: dict[str, str]
         ):
     with open(output_file, 'w') as f:
         for line in get_server_lines():
             f.write(line)
         for i in range (1, amount_of_clients + 1):
-            for line in get_client_lines(i, client_config):
+            for line in get_client_lines(i):
                 f.write(line)
         for line in get_network_lines():
             f.write(line)        
