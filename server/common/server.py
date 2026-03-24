@@ -33,7 +33,6 @@ class Server:
                     client_handler.inform_agency_result()
                 self.__handle_exit()
 
-
     def __accept_new_connection(self):
         """
         Accept new connections
