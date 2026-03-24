@@ -14,7 +14,6 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common"
-	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/bet"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/config"
 )
 
@@ -36,12 +35,6 @@ func InitConfig() (*viper.Viper, error) {
 	// Configure viper to read env variables with the CLI_ prefix
 	v.AutomaticEnv()
 	v.SetEnvPrefix("CLI")
-
-	v.BindEnv("NAME")
-	v.BindEnv("LAST_NAME")
-	v.BindEnv("DNI")
-	v.BindEnv("BIRTHDAY")
-	v.BindEnv("BET_NUMBER")
 
 	// Use a replacer to replace env variables underscores with points. This let us
 	// use nested configurations in the config file and at the same time define
@@ -70,16 +63,8 @@ func InitConfig() (*viper.Viper, error) {
 		return nil, errors.Wrapf(err, "Could not parse CLI_LOOP_PERIOD env var as time.Duration.")
 	}
 
-	if _, err := strconv.Atoi(v.GetString("DNI")); err != nil {
-		return nil, errors.Wrapf(err, "Could not parse CLI_DNI env var as integer")
-	}
-
-	if _, err := time.Parse(DATE_LAYOUT, v.GetString("BIRTHDAY")); err != nil {
-		return nil, errors.Wrapf(err, "Could not parse CLI_BIRTHDAY env var as time.Time")
-	}
-
-	if _, err := strconv.Atoi(v.GetString("BET_NUMBER")); err != nil {
-		return nil, errors.Wrapf(err, "Could not parse CLI_BET_NUMBER env var as integer")
+	if _, err := strconv.Atoi(v.GetString("id")); err != nil {
+		return nil, errors.Wrapf(err, "Could not parse CLI_ID env var as integer.")
 	}
 
 	return v, nil
@@ -117,12 +102,8 @@ func PrintConfig(v *viper.Viper) {
 		v.GetDuration("loop.period"),
 		v.GetString("log.level"),
 	)
-	log.Infof("action: client_config | result: success | client_name: %s | client_last_name: %s | client_dni: %v | client_birthday: %v | client_bet_number: %v",
-		v.GetString("NAME"),
-		v.GetString("LAST_NAME"),
-		v.GetInt("DNI"),
-		v.GetTime("BIRTHDAY").Format("2006-01-02"),
-		v.GetInt("BET_NUMBER"),
+	log.Infof("action: client_config | result: success | client_id: %v",
+		v.GetInt("ID"),
 	)
 }
 
@@ -151,19 +132,11 @@ func main() {
 		LoopPeriod: v.GetDuration("loop.period"),
 	}
 
-	bet := bet.CreateBet(
-		v.GetString("NAME"),
-		v.GetString("LAST_NAME"),
-		v.GetInt("DNI"),
-		v.GetInt("BET_NUMBER"),
-		v.GetTime("BIRTHDAY"),
-	)
-
 	signals := make(chan os.Signal, 1)
 
 	signal.Notify(signals, syscall.SIGTERM)
 
-	client := common.NewClient(clientServerConfig, clientLoopConfig, bet)
+	client := common.NewClient(clientServerConfig, clientLoopConfig)
 
 	go func() {
 		<-signals

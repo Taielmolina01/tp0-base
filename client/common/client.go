@@ -3,7 +3,6 @@ package common
 import (
 	"time"
 
-	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/bet"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/config"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/protocol"
 	"github.com/op/go-logging"
@@ -14,7 +13,6 @@ type Client struct {
 	loopConfig config.ClientLoopConfig
 	id         string
 	protocol   protocol.ClientProtocol
-	betInfo    bet.Bet
 	logger     *logging.Logger
 }
 
@@ -23,14 +21,12 @@ type Client struct {
 func NewClient(
 	clientServerConfig config.ClientServerConfig,
 	clientLoopConfig config.ClientLoopConfig,
-	betInfo bet.Bet,
 ) *Client {
 	logger := logging.MustGetLogger("log")
 	client := &Client{
 		loopConfig: clientLoopConfig,
 		id:         clientServerConfig.ID,
 		protocol:   protocol.CreateClientProtocol(clientServerConfig.ServerAddress, logger),
-		betInfo:    betInfo,
 		logger:     logger,
 	}
 	return client
@@ -51,7 +47,7 @@ func (c *Client) StartClientLoop() {
 	}
 
 	for msgID := 1; msgID <= c.loopConfig.LoopAmount; msgID++ {
-		// Create the connection the server in every loop iteration. Send an
+		"encoding/csv"
 
 		err = c.protocol.SendBet(c.betInfo)
 
