@@ -9,17 +9,19 @@ import (
 )
 
 const (
-	SEND_BET_CODE = 0x01
-	ACK_CODE      = 0x03
-	FIN_CODE      = 0x05
+	SEND_BET_CODE   = 0x01
+	ACK_CODE        = 0x03
+	FIN_CODE        = 0x05
+	FIN_CHUNKS_CODE = 0x10
 )
 
 // Types and creation function of the protocol
 
 type ClientProtocol interface {
-	CreateClientSocket() error
+	CreateClientSocket(int) error
 	SendBets([]bet.BetDto) error
 	ReceiveAckBet() (string, error)
+	NotifyEndAndWaitWinners() ([]bet.DNI, error)
 	Exit() error
 }
 
@@ -39,12 +41,16 @@ func CreateClientProtocol(
 // CreateClientSocket Initializes client socket. In case of
 // failure, error is printed in stdout/stderr and exit 1
 // is returned
-func (c *ClientProtocolImpl) CreateClientSocket() error {
+func (c *ClientProtocolImpl) CreateClientSocket(id int) error {
 	socket, err := socket.CreateSocket(c.serverAddress) // handle error
 	if err != nil {
 		return err
 	}
 	c.socket = socket
+	err = c.makeAppHandshake(id)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -55,7 +61,7 @@ func (c *ClientProtocolImpl) SendBets(bets []bet.BetDto) error {
 		return err
 	}
 
-	err = c.sendBigEndianNumber(len(bets))
+	err = c.sendBigEndianTwoBytesNumber(len(bets))
 	if err != nil {
 		return err
 	}
@@ -70,8 +76,55 @@ func (c *ClientProtocolImpl) SendBets(bets []bet.BetDto) error {
 	return nil
 }
 
+func (c *ClientProtocolImpl) ReceiveAckBet() (string, error) {
+	data, err := c.socket.ReceiveAll(1)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
+}
+
+func (c *ClientProtocolImpl) NotifyEndAndWaitWinners() ([]bet.DNI, error) {
+	c.socket.SendAll([]byte{FIN_CHUNKS_CODE})
+	countWinners, err := c.receiveBigEndianTwoBytesNumber()
+	if err != nil {
+		return nil, err
+	}
+	winners := make([]bet.DNI, countWinners)
+	for i := 0; i < countWinners; i++ {
+		winner, err := c.receiveWinner()
+		if err != nil {
+			return winners, err
+		}
+		winners[i] = winner
+	}
+	return winners, err
+}
+
+func (c *ClientProtocolImpl) Exit() error {
+	c.socket.SendAll([]byte{FIN_CODE})
+	if err := c.socket.Close(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Helpers
+
+func (c *ClientProtocolImpl) makeAppHandshake(id int) error {
+	return c.socket.SendAll([]byte{byte(id)})
+}
+
+func (c *ClientProtocolImpl) receiveWinner() (bet.DNI, error) {
+	dni, err := c.receiveBigEndianFourBytesNumber()
+	if err != nil {
+		return 0, err
+	}
+	return bet.DNI(dni), err
+}
+
 func (c *ClientProtocolImpl) sendBet(bet bet.BetDto) error {
-	err := c.sendBigEndianNumber(len(bet.String()))
+	err := c.sendBigEndianTwoBytesNumber(len(bet.String()))
 	if err != nil {
 		return err
 	}
@@ -82,24 +135,24 @@ func (c *ClientProtocolImpl) sendBet(bet bet.BetDto) error {
 	return nil
 }
 
-func (c *ClientProtocolImpl) ReceiveAckBet() (string, error) {
-	data, err := c.socket.ReceiveAll(1)
+func (c *ClientProtocolImpl) receiveBigEndianFourBytesNumber() (int, error) {
+	buf, err := c.socket.ReceiveAll(4)
 	if err != nil {
-		return "", err
+		return -1, err
 	}
-	return string(data), nil
+	return int(binary.BigEndian.Uint32(buf)), nil
 }
 
-func (c *ClientProtocolImpl) sendBigEndianNumber(number int) error {
+func (c *ClientProtocolImpl) sendBigEndianTwoBytesNumber(number int) error {
 	lenBuf := make([]byte, 2)
 	binary.BigEndian.PutUint16(lenBuf, uint16(number))
 	return c.socket.SendAll(lenBuf)
 }
 
-func (c *ClientProtocolImpl) Exit() error {
-	c.socket.SendAll([]byte{FIN_CODE})
-	if err := c.socket.Close(); err != nil {
-		return err
+func (c *ClientProtocolImpl) receiveBigEndianTwoBytesNumber() (int, error) {
+	buf, err := c.socket.ReceiveAll(2)
+	if err != nil {
+		return -1, err
 	}
-	return nil
+	return int(binary.BigEndian.Uint16(buf)), nil
 }

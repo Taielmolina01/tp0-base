@@ -8,6 +8,7 @@ from common.protocol.exceptions.bad_amount_fields_bet import (
 
 ACK_CODE = 0x03
 FIN_CODE = 0x05
+FIN_CHUNKS_CODE = 0x10
 AMOUNT_OF_FIELDS_BET = 6
 AGENCY_FIELD_INDEX = 0
 NAME_FIELD_INDEX = 1
@@ -28,9 +29,26 @@ class Protocol:
 
     def receive_operation(self):
         code = self.socket.receive_all(1)
-        if code[0] == FIN_CODE:
-            raise EndOfCommunicationException()
-        return self.__receive_bets()
+        if code[0] == FIN_CHUNKS_CODE:
+            return [], True
+        else:
+            return self.__receive_bets(), False
+        
+    def send_results_to_agencies(self, winners):
+        self.__send_big_endian_two_bytes_number(len(winners))
+        for winner in winners:
+            self.__send_big_endian_four_bytes_number(winner)
+
+    def send_ack_bet(self):
+        self.socket.send_all(bytes([ACK_CODE]))
+
+    def getpeername(self):
+        return self.socket.sock.getpeername()
+
+    def close(self):
+        self.socket.close()
+
+    ## Helpers
 
     def __receive_bets(self):
         length_chunk = self.__receive_big_endian_number()
@@ -56,15 +74,12 @@ class Protocol:
             fields[BIRTHDATE_FIELD_INDEX],
             fields[BET_NUMBER_FIELD_INDEX],
         )
+    
+    def __send_big_endian_two_bytes_number(self, number):
+        self.socket.send_all(number.to_bytes(2, byteorder='big'))
 
-    def send_ack_bet(self):
-        self.socket.send_all(bytes([ACK_CODE]))
-
+    def __send_big_endian_four_bytes_number(self, number):
+        self.socket.send_all(number.to_bytes(4, byteorder='big'))
+    
     def __receive_big_endian_number(self):
         return int.from_bytes(self.socket.receive_all(2), byteorder="big")
-
-    def getpeername(self):
-        return self.socket.sock.getpeername()
-
-    def close(self):
-        self.socket.close()

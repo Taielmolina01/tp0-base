@@ -8,9 +8,11 @@ import logging
 
 
 class ClientHandler:
-    def __init__(self, skt):
+    def __init__(self, id, skt, lottery):
+        self.id = id
         self.is_running = True
         self.__protocol = Protocol(skt)
+        self.lottery = lottery
 
     def run(self):
         """
@@ -20,12 +22,20 @@ class ClientHandler:
         """
         while self.is_running:
             try:
-                data = self.__protocol.receive_operation()
-                store_bets(data)
-                logging.info(
-                    f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
-                )
-                self.__protocol.send_ack_bet()
+                data, ended = self.__protocol.receive_operation()
+                if ended:
+                    if not self.lottery.check_agency_as_finished(self.id):
+                        logging.error(
+                            f"action: apuesta_recibida | result: fail | error: bad agency number"
+                        )
+                    self.is_running = False
+                else:   
+                    store_bets(data)
+                    logging.info(
+                        f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
+                    )
+                    self.lottery.store_bets_per_agency(self.id, data)
+                    self.__protocol.send_ack_bet()
             except EndOfCommunicationException:
                 self.is_running = False
             except BadAmountOfFieldsInBet as e:
@@ -45,8 +55,10 @@ class ClientHandler:
             except OSError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
                 self.is_running = False
-        self.close()
 
+    def inform_agency_result(self):
+        self.__protocol.send_results_to_agencies(self.lottery.get_winners_of_agency(self.id))
+    
     def __repr_bets(self, data):
         return len(data) if data is not None else 0
 

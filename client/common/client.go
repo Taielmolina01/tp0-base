@@ -38,7 +38,7 @@ func (c *Client) StartClientLoop() {
 	// There is an autoincremental msgID to identify every message sent
 	// Messages if the message amount threshold has not been surpassed
 
-	err := c.protocol.CreateClientSocket()
+	err := c.protocol.CreateClientSocket(c.id)
 	if err != nil {
 		c.logger.Criticalf(
 			"action: create_socket | result: fail | client_id: %v | error: %v",
@@ -103,6 +103,21 @@ func (c *Client) StartClientLoop() {
 		time.Sleep(c.loopConfig.LoopPeriod)
 
 	}
+
+	winners, err := c.protocol.NotifyEndAndWaitWinners()
+
+	if err != nil {
+		c.logger.Criticalf(
+			"action: consulta_ganadores | result: fail | client_id: %v | error: %v",
+			c.id,
+			err,
+		)
+	}
+
+	c.logger.Infof(
+		"action: consulta_ganadores | result: success | cant_ganadores: %v",
+		len(winners),
+	)
 
 	err = c.protocol.Exit()
 

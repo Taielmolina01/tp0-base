@@ -1,5 +1,6 @@
 from common.blocking_socket.blocking_socket import BlockingSocket
 from common.client_handler.client_handler import ClientHandler
+from common.lottery.lottery import Lottery
 import socket
 import logging
 import signal
@@ -12,7 +13,8 @@ class Server:
         self.__acceptor_socket.bind(("", port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
-        self.__client_handler = None
+        self.__client_handlers = []
+        self.lottery = Lottery()
 
     def run(self):
         """
@@ -23,9 +25,12 @@ class Server:
         finishes, servers starts to accept new connections again
         """
         while True:
-            skt = self.__accept_new_connection()
-            self.__client_handler = ClientHandler(skt)
-            self.__client_handler.run()
+            skt, agency_id = self.__accept_new_connection()
+            self.__client_handlers.append(ClientHandler(agency_id, skt, self.lottery))
+            self.__client_handlers[-1].run()
+            if self.lottery.check_finished():
+                for client_handler in self.__client_handlers:
+                    client_handler.inform_agency_result()
 
     def __accept_new_connection(self):
         """
@@ -42,7 +47,8 @@ class Server:
             logging.info(
                 f"action: accept_connections | result: success | ip: {addr[0]}"
             )
-            return c
+            agency_id = c.receive_all(1)
+            return c, agency_id
         except OSError:
             self.__handle_exit()
 

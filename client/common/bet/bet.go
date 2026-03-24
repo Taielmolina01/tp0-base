@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+type DNI int
+
 type Bet struct {
 	name      string
 	lastName  string
