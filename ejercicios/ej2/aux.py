@@ -16,7 +16,6 @@ def get_server_lines() -> list[str]:
 
 def get_client_lines(
     client_number: int,
-    client_config: dict[str, str]
     ) -> list[str]:
     return [
         f"  client{client_number}:\n",
@@ -25,11 +24,6 @@ def get_client_lines(
         "    entrypoint: /client\n",
         "    environment:\n",
         f"      - CLI_ID={client_number}\n",
-        f"      - CLI_NAME={client_config["name"]}\n",
-        f"      - CLI_LAST_NAME={client_config["last_name"]}\n",
-        f"      - CLI_DNI={client_config["dni"]}\n",
-        f"      - CLI_BIRTHDAY={client_config["birthday"]}\n",
-        f"      - CLI_BET_NUMBER={client_config["bet_number"]}\n",
         "    networks:\n",
         "      - testing_net\n",
         "    volumes:\n",

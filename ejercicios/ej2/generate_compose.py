@@ -13,17 +13,10 @@ def main():
     
     output_file = sys.argv[1]
     amount_of_clients = int(sys.argv[2])
-    client_config = {
-        "name": sys.argv[3],
-        "last_name": sys.argv[4],
-        "dni": sys.argv[5],
-        "birthday": sys.argv[6],
-        "bet_number": sys.argv[7]
-    }
 
     # chequear estos valores
 
-    generate_compose_file(output_file, amount_of_clients, client_config)
+    generate_compose_file(output_file, amount_of_clients)
 
 if __name__ == '__main__':
     main() 
