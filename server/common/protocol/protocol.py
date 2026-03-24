@@ -1,8 +1,8 @@
 from common.blocking_socket.blocking_socket import BlockingSocket
 from common.utils import Bet
 import socket
-from server.common.protocol.exceptions.eoc_exception import EndOfCommunicationException
-from server.common.protocol.exceptions.bad_amount_fields_bet import (
+from common.protocol.exceptions.eoc_exception import EndOfCommunicationException
+from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
 
@@ -42,11 +42,10 @@ class Protocol:
     def __receive_bet(self):
         length = self.__receive_big_endian_number()
         bet_msg = self.socket.receive_all(length)
-        return self.__create_bet(str(bet_msg))
+        return self.__create_bet(bet_msg.decode("utf-8").strip())
 
     def __create_bet(self, msg):
-        real_msg = msg[1 : len(msg) - 1]
-        fields = real_msg.split(",")
+        fields = msg.split(",")
         if len(fields) != AMOUNT_OF_FIELDS_BET:
             raise BadAmountOfFieldsInBet()
         return Bet(

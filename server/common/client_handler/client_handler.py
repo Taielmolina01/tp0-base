@@ -1,6 +1,6 @@
 from common.protocol.protocol import Protocol
-from server.common.protocol.exceptions.eoc_exception import EndOfCommunicationException
-from server.common.protocol.exceptions.bad_amount_fields_bet import (
+from common.protocol.exceptions.eoc_exception import EndOfCommunicationException
+from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
 from common.utils import store_bets
@@ -21,9 +21,9 @@ class ClientHandler:
         while self.is_running:
             try:
                 data = self.__protocol.receive_operation()
-                bets = store_bets(data)
+                store_bets(data)
                 logging.info(
-                    f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
+                    f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                 )
                 self.__protocol.send_ack_bet()
             except EndOfCommunicationException:
@@ -31,12 +31,12 @@ class ClientHandler:
             except BadAmountOfFieldsInBet as e:
                 self.is_running = False
                 logging.info(
-                    f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
+                    f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                 )
             except ValueError as e:
                 self.is_running = False
                 logging.info(
-                    f"action: apuesta_recibida | result: success | cantidad: {len(bets)}"
+                    f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                 )
             except ConnectionError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
@@ -46,6 +46,9 @@ class ClientHandler:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
                 self.is_running = False
         self.close()
+
+    def __repr_bets(self, data):
+        return len(data) if data is not None else 0
 
     def close(self):
         self.__protocol.close()
