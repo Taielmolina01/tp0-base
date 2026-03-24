@@ -18,15 +18,17 @@ class ClientHandler:
             try:
                 data = self.__protocol.receive_operation()
                 store_bets(data)
-                logging.info(f"action: apuesta_almacenada | result: success | dni: {data.document} | numero: {data.number}")            
+                logging.info(f"action: apuesta_recibida | result: success | cantidad: {len(data)}")            
                 self.__protocol.send_ack_bet()
             except EndOfCommunicationException as e:
                 self.is_running = False
             except ConnectionError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
                 logging.error("Client has disconnected. Closing socket")
+                self.is_running = False
             except OSError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
+                self.is_running = False
         self.close()
 
     def close(self):

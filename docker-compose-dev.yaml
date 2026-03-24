@@ -21,7 +21,7 @@ services:
       - testing_net
     volumes:
       - ./client/config.yaml:/config/config.yaml
-      - ./.data/agency-1.csv:/.data/agency-1
+      - ./.data/agency-1.csv:/.data/agency-1.csv
     depends_on:
       - server
 

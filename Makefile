@@ -37,3 +37,8 @@ docker-compose-down:
 docker-compose-logs:
 	docker compose -f docker-compose-dev.yaml logs -f
 .PHONY: docker-compose-logs
+
+docker-compose-logs-file:
+	mkdir -p logs
+	docker compose -f docker-compose-dev.yaml logs -f | tee logs/docker-compose.log
+.PHONY: docker-compose-logs-file

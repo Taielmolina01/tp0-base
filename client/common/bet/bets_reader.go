@@ -3,6 +3,7 @@ package bet
 import (
 	"encoding/csv"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"time"
@@ -15,7 +16,7 @@ const (
 	_DNI_FIELD_INDEX       = 2
 	_BIRTHDATE_FIELD_INDEX = 3
 	_BETNUMBER_FIELD_INDEX = 4
-	_DATA_FILEPATH         = ".data/agency-%d"
+	_DATA_FILEPATH         = ".data/agency-%d.csv"
 )
 
 type BetsReader interface {
@@ -45,7 +46,10 @@ func (b *betsReaderImpl) ReadChunk() ([]Bet, error) {
 		actualRow, err := b.reader.Read()
 
 		if err != nil {
-			return nil, fmt.Errorf("erro reading file: %w", err)
+			if err == io.EOF {
+				break
+			}
+			return nil, fmt.Errorf("error reading file: %w", err)
 		}
 
 		name, lastName := actualRow[_NAME_FIELD_INDEX], actualRow[_LAST_NAME_FIELD_INDEX]

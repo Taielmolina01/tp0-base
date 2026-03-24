@@ -67,6 +67,11 @@ func (c *Client) StartClientLoop() {
 				c.id,
 				err,
 			)
+			break
+		}
+
+		if len(bets) == 0 {
+			break
 		}
 
 		err = c.protocol.SendBets(bets)

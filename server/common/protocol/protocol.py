@@ -17,12 +17,12 @@ class Protocol:
 
     def receive_operation(self):
         code = self.socket.receive_all(1)
-        if code == FIN_CODE:
+        if code[0] == FIN_CODE:
             raise EndOfCommunicationException()
         return self.__receive_bets()
 
     def __receive_bets(self):
-        length_chunk = self.__receive_big_endian_number
+        length_chunk = self.__receive_big_endian_number()
         bets = []
         for _ in range (length_chunk):
             bets.append(self.__receive_bet())
