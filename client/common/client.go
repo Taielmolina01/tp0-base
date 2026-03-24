@@ -3,6 +3,7 @@ package common
 import (
 	"time"
 
+	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/bet"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/config"
 	"github.com/7574-sistemas-distribuidos/docker-compose-init/client/common/protocol"
 	"github.com/op/go-logging"
@@ -11,7 +12,7 @@ import (
 // Client Entity that encapsulates how
 type Client struct {
 	loopConfig config.ClientLoopConfig
-	id         string
+	id         int
 	protocol   protocol.ClientProtocol
 	logger     *logging.Logger
 }
@@ -46,10 +47,29 @@ func (c *Client) StartClientLoop() {
 		)
 	}
 
-	for msgID := 1; msgID <= c.loopConfig.LoopAmount; msgID++ {
-		"encoding/csv"
+	reader, err := bet.CreateBetsReader(c.id)
 
-		err = c.protocol.SendBet(c.betInfo)
+	if err != nil {
+		c.logger.Criticalf(
+			"action: open_csv | result: fail | client_id: %v | error: %v",
+			c.id,
+			err,
+		)
+	}
+
+	for msgID := 1; msgID <= c.loopConfig.LoopAmount; msgID++ {
+
+		bets, err := reader.ReadChunk()
+
+		if err != nil {
+			c.logger.Criticalf(
+				"action: read_csv | result: fail | client_id: %v | error: %v",
+				c.id,
+				err,
+			)
+		}
+
+		err = c.protocol.SendBets(bets)
 
 		if err != nil {
 			c.logger.Criticalf(
@@ -68,12 +88,6 @@ func (c *Client) StartClientLoop() {
 				err,
 			)
 		}
-
-		c.logger.Infof(
-			"action: apuesta_enviada | result: success | dni: %v | numero: %v",
-			c.betInfo.GetDNI(),
-			c.betInfo.GetBetNumber(),
-		)
 
 		// c.logger.Infof("action: receive_message | result: success | client_id: %v | msg: %v",
 		// 	c.id,

@@ -3,12 +3,18 @@ package bet
 import (
 	"encoding/csv"
 	"fmt"
-	"io"
 	"os"
+	"strconv"
+	"time"
 )
 
 const (
-	_CHUNK_SIZE = 8000
+	_CHUNK_SIZE            = 8000
+	_NAME_FIELD_INDEX      = 0
+	_LAST_NAME_FIELD_INDEX = 1
+	_DNI_FIELD_INDEX       = 2
+	_BIRTHDATE_FIELD_INDEX = 3
+	_BETNUMBER_FIELD_INDEX = 4
 )
 
 type BetsReader interface {
@@ -20,7 +26,6 @@ type betsReaderImpl struct {
 }
 
 func CreateBetsReader(
-	fileName string,
 	agencyNumber int,
 ) (BetsReader, error) {
 	file, err := os.Open(fmt.Sprintf("../../../.data/agency-%d.csv", agencyNumber))
@@ -35,15 +40,47 @@ func CreateBetsReader(
 
 func (b *betsReaderImpl) ReadChunk() ([]Bet, error) {
 	result := []Bet{}
-	read := 0
 	for read := 0; read < _CHUNK_SIZE; {
-		record, err := reader.Read()
+		actualRow, err := b.reader.Read()
 
-		// Check for the end of the file
-		if err == io.EOF {
-			break // Exit the loop when no more data is available
+		if err != nil {
+			return nil, fmt.Errorf("erro reading file: %w", err)
 		}
 
+		name, lastName := actualRow[_NAME_FIELD_INDEX], actualRow[_LAST_NAME_FIELD_INDEX]
+		birthdateStr := actualRow[_BIRTHDATE_FIELD_INDEX]
+		dniStr, betNumberStr := actualRow[_DNI_FIELD_INDEX], actualRow[_BETNUMBER_FIELD_INDEX]
+
+		dni, err := strconv.Atoi(dniStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid dni %q: %w", dniStr, err)
+		}
+
+		betNumber, err := strconv.Atoi(betNumberStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid bet number %q: %w", betNumberStr, err)
+		}
+
+		birthdate, err := time.Parse("2006-01-02", birthdateStr)
+		if err != nil {
+			return nil, fmt.Errorf("invalid birthdate %q: %w", birthdateStr, err)
+		}
+
+		actualBet := CreateBet(
+			name,
+			lastName,
+			dni,
+			betNumber,
+			birthdate,
+		)
+
+		if read+len([]byte(actualBet.String())) > _CHUNK_SIZE {
+			break
+		}
+
+		result = append(result, actualBet)
+
+		read += len([]byte(actualBet.String()))
 	}
-	return nil, nil
+	return result, nil
 }

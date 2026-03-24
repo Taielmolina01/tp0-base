@@ -19,10 +19,17 @@ class Protocol:
         code = self.socket.receive_all(1)
         if code == FIN_CODE:
             raise EndOfCommunicationException()
-        return self.__receive_bet()
-    
+        return self.__receive_bets()
+
+    def __receive_bets(self):
+        length_chunk = self.__receive_big_endian_number
+        bets = []
+        for _ in range (length_chunk):
+            bets.append(self.__receive_bet())
+        return bets
+
     def __receive_bet(self):
-        length = int.from_bytes(self.socket.receive_all(2), byteorder='big')
+        length = self.__receive_big_endian_number()
         bet_msg = self.socket.receive_all(length)
         return self.__create_bet(str(bet_msg))
 
@@ -33,6 +40,9 @@ class Protocol:
 
     def send_ack_bet(self):
         self.socket.send_all(bytes([ACK_CODE]))
+
+    def __receive_big_endian_number(self):
+        return int.from_bytes(self.socket.receive_all(2), byteorder='big')
 
     def getpeername(self):
         return self.socket.sock.getpeername()

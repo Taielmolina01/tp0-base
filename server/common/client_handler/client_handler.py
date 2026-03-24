@@ -17,7 +17,7 @@ class ClientHandler:
         while self.is_running:
             try:
                 data = self.__protocol.receive_operation()
-                store_bets([data])
+                store_bets(data)
                 logging.info(f"action: apuesta_almacenada | result: success | dni: {data.document} | numero: {data.number}")            
                 self.__protocol.send_ack_bet()
             except EndOfCommunicationException as e:

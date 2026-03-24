@@ -124,7 +124,7 @@ func main() {
 
 	clientServerConfig := config.ClientServerConfig{
 		ServerAddress: v.GetString("server.address"),
-		ID:            v.GetString("id"),
+		ID:            v.GetInt("id"),
 	}
 
 	clientLoopConfig := config.ClientLoopConfig{
