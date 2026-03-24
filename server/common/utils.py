@@ -33,6 +33,9 @@ class Bet:
         self.birthdate = datetime.date.fromisoformat(birthdate)
         self.number = int(number)
 
+    def __repr__(self):
+        return f"{{agency: {self.agency}; document: {self.document}, number: {self.number}}}"
+
 
 """ Checks whether a bet won the prize or not. """
 

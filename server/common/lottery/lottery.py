@@ -8,7 +8,10 @@ class Agency:
         self.id = id
         self.is_ready = False
         self.winners = []
-        self.bets = {}
+        self.bets = {} 
+
+    def __repr__(self):
+        return f"{{id: {self.id}; winners: {self.winners}; bets: {self.bets}}}"
 
 class Lottery:
     def __init__(self, amount_of_agencies=AMOUNT_OF_AGENCIES):
