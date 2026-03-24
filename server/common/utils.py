@@ -34,7 +34,7 @@ class Bet:
         self.number = int(number)
 
     def __repr__(self):
-        return f"{{agency: {self.agency}; document: {self.document}, number: {self.number}}}"
+        return f"{{agency: {self.agency}\ndocument\n{self.document}\nnumber: {self.number}}}"
 
 
 """ Checks whether a bet won the prize or not. """
