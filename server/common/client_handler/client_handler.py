@@ -8,11 +8,12 @@ import logging
 
 
 class ClientHandler:
-    def __init__(self, id, skt, lottery):
-        self.id = id
+    def __init__(self, skt, lottery):
         self.is_running = True
         self.__protocol = Protocol(skt)
         self.lottery = lottery
+        self.id = self.__protocol.receive_agency_id()
+        
 
     def run(self):
         """

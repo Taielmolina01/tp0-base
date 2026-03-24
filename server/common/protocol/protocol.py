@@ -27,6 +27,9 @@ class Protocol:
         else:
             self.socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
 
+    def receive_agency_id(self):
+        return self.socket.receive_all(1)[0]
+
     def receive_operation(self):
         code = self.socket.receive_all(1)
         if code[0] == FIN_CHUNKS_CODE:

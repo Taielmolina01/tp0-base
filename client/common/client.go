@@ -45,6 +45,7 @@ func (c *Client) StartClientLoop() {
 			c.id,
 			err,
 		)
+		return
 	}
 
 	reader, err := bet.CreateBetsReader(c.id)
@@ -55,6 +56,7 @@ func (c *Client) StartClientLoop() {
 			c.id,
 			err,
 		)
+		return
 	}
 
 	for msgID := 1; msgID <= c.loopConfig.LoopAmount; msgID++ {

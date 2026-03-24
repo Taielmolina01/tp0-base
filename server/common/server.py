@@ -25,8 +25,8 @@ class Server:
         finishes, servers starts to accept new connections again
         """
         while True:
-            skt, agency_id = self.__accept_new_connection()
-            self.__client_handlers.append(ClientHandler(agency_id, skt, self.lottery))
+            skt = self.__accept_new_connection()
+            self.__client_handlers.append(ClientHandler(skt, self.lottery))
             self.__client_handlers[-1].run()
             if self.lottery.check_finished():
                 for client_handler in self.__client_handlers:
@@ -47,8 +47,7 @@ class Server:
             logging.info(
                 f"action: accept_connections | result: success | ip: {addr[0]}"
             )
-            agency_id = c.receive_all(1)
-            return c, agency_id
+            return c
         except OSError:
             self.__handle_exit()
 
