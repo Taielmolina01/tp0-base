@@ -1,4 +1,3 @@
-from builtins import frozendict 
 from common.utils import has_won, load_bets
 AMOUNT_OF_AGENCIES = 5
 
