@@ -15,6 +15,8 @@ class Server:
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
         self.__client_handlers : list[ClientHandler] = []
         self.lottery = Lottery(amount_of_clients)
+        self.amount_of_clients = amount_of_clients
+        self.is_running = True
 
     def run(self):
         """
@@ -24,17 +26,22 @@ class Server:
         communication with a client. After client with communucation
         finishes, servers starts to accept new connections again
         """
-        while True:
+        while self.is_running:
             skt = self.__accept_new_connection()
             self.__client_handlers.append(ClientHandler(skt, self.lottery))
             self.__client_handlers[-1].run()
-            if self.lottery.check_finished():
-                print("entro al if")
-                for client_handler in self.__client_handlers:
-                    client_handler.inform_agency_result()
-                logging.info("action: sorteo | result: success")
-                self.__handle_exit()
+            if self.lottery.check_finished():        
+                self.__handle_query_phase()
+                self.is_running = False
 
+    def __handle_query_phase(self):
+        clients_satisfied = 0
+        while clients_satisfied != self.amount_of_clients:
+            for client in self.__client_handlers: 
+                if client.had_received_query_winners():
+                    clients_satisfied += 1
+                    client.inform_agency_result()
+                
     def __accept_new_connection(self):
         """
         Accept new connections

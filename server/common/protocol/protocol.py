@@ -10,6 +10,7 @@ import logging
 ACK_CODE = 0x03
 FIN_CODE = 0x05
 FIN_CHUNKS_CODE = 0x10
+QUERY_WINNERS_CODE = 0x09
 AMOUNT_OF_FIELDS_BET = 6
 AGENCY_FIELD_INDEX = 0
 NAME_FIELD_INDEX = 1
@@ -28,6 +29,12 @@ class Protocol:
         else:
             self.socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
 
+    def had_received_query_winners(self):
+        code = self.socket.try_receive_all(1)
+        if not code:
+            return False
+        return code[0] == QUERY_WINNERS_CODE
+    
     def receive_agency_id(self):
         return self.socket.receive_all(1)[0]
 
@@ -38,7 +45,7 @@ class Protocol:
         else:
             return self.__receive_bets(), False
         
-    def send_results_to_agencies(self, winners):
+    def send_results_to_agency(self, winners):
         self.__send_big_endian_two_bytes_number(len(winners))
         for winner in winners:
             self.__send_big_endian_four_bytes_number(winner)

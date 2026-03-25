@@ -58,8 +58,11 @@ class ClientHandler:
                 self.is_running = False
 
     def inform_agency_result(self):
-        self.__protocol.send_results_to_agencies(self.lottery.get_winners_of_agency(self.id))
+        self.__protocol.send_results_to_agency(self.lottery.get_winners_of_agency(self.id))
     
+    def had_received_query_winners(self):
+        return self.__protocol.had_received_query_winners()
+
     def __repr_bets(self, data):
         return len(data) if data is not None else 0
 

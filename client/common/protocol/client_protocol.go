@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	SEND_BET_CODE   = 0x01
-	ACK_CODE        = 0x03
-	FIN_CODE        = 0x05
-	FIN_CHUNKS_CODE = 0x10
+	SEND_BET_CODE      = 0x01
+	ACK_CODE           = 0x03
+	FIN_CODE           = 0x05
+	FIN_CHUNKS_CODE    = 0x10
+	QUERY_WINNERS_CODE = 0x09
 )
 
 // Types and creation function of the protocol
@@ -86,6 +87,7 @@ func (c *ClientProtocolImpl) ReceiveAckBet() (string, error) {
 
 func (c *ClientProtocolImpl) NotifyEndAndWaitWinners() ([]bet.DNI, error) {
 	c.socket.SendAll([]byte{FIN_CHUNKS_CODE})
+	c.socket.SendAll([]byte{QUERY_WINNERS_CODE})
 	countWinners, err := c.receiveBigEndianTwoBytesNumber()
 	if err != nil {
 		return nil, err
