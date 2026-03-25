@@ -18,7 +18,7 @@ class Server:
         self.lottery_monitor = LotteryMonitor(Lottery(amount_of_clients))
         self.amount_of_clients = amount_of_clients
         self.is_running = True
-        self.barrier = Barrier(amount_of_clients, self.__handle_query_phase)
+        self.barrier = Barrier(amount_of_clients + 1)
 
     def run(self):
         """
@@ -28,15 +28,24 @@ class Server:
         communication with a client. After client with communucation
         finishes, servers starts to accept new connections again
         """
-        while self.is_running:
+        threads = []
+        while self.is_running and len(self.__client_handlers) < self.amount_of_clients:
             skt = self.__accept_new_connection()
             self.__client_handlers.append(ClientHandler(skt, self.lottery_monitor, self.barrier))
-            Thread(target=self.__client_handlers[-1].run).start()
-            
+            threads.append(Thread(target=self.__client_handlers[-1].run))
+            threads[-1].start()
+        
+        self.barrier.wait()
+        self.lottery_monitor.check_finished()
+        self.__handle_query_phase()
+
+        for thread in threads:
+            thread.join()
+
 
     def __handle_query_phase(self):
         clients_satisfied = 0
-        while clients_satisfied != self.amount_of_clients:
+        while clients_satisfied < self.amount_of_clients:
             for client in self.__client_handlers: 
                 if client.had_received_query_winners():
                     clients_satisfied += 1

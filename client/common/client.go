@@ -106,6 +106,11 @@ func (c *Client) StartClientLoop() {
 
 	}
 
+	c.logger.Infof(
+		"action: enviar_datos | result: success | client_id: %v",
+		c.id,
+	)
+
 	winners, err := c.protocol.NotifyEndAndWaitWinners()
 
 	if err != nil {

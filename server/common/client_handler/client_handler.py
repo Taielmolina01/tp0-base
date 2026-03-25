@@ -36,8 +36,14 @@ class ClientHandler:
                         logging.error(
                             f"action: apuesta_recibida | result: fail | error: bad agency number"
                         )
+                    logging.info(
+                        f"action: entro a esperar barrera | client_handler_id: {self.id}"
+                    )
                     self.is_running = False
                     self.barrier.wait()
+                    logging.info(
+                        f"action: salgo de la barrera | client_handler_id: {self.id}"
+                    )
                 else:   
                     store_bets(data)
                     logging.info(
@@ -47,23 +53,28 @@ class ClientHandler:
                     self.__protocol.send_ack_bet()
             except EndOfCommunicationException:
                 self.is_running = False
+                self.barrier.wait()
             except BadAmountOfFieldsInBet as e:
                 self.is_running = False
                 logging.info(
                     f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                 )
+                self.barrier.wait()
             except ValueError as e:
                 self.is_running = False
                 logging.info(
                     f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                 )
+                self.barrier.wait()
             except ConnectionError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
                 logging.error("Client has disconnected. Closing socket")
                 self.is_running = False
+                self.barrier.wait()
             except OSError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
                 self.is_running = False
+                self.barrier.wait()
 
     def inform_agency_result(self):
         self.__protocol.send_results_to_agency(self.lottery_monitor.get_winners_of_agency(self.id))
