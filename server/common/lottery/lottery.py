@@ -41,10 +41,6 @@ class Lottery:
             for agency in self.agencies.values():
                 if agency.bets[document] and agency.id == bet.agency:
                     agency.winners.append(document)
-
-        logging.info("The winners are:\n")
-        for agency in self.agencies.values():
-            logging.info(f"id: {agency.id}, winners: {agency.winners}\n")
         return True
     
     def _get_winners_of_agency(self, agency_number):

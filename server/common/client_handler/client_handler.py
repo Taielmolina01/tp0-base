@@ -36,14 +36,8 @@ class ClientHandler:
                         logging.error(
                             f"action: apuesta_recibida | result: fail | error: bad agency number"
                         )
-                    logging.info(
-                        f"action: entro a esperar barrera | client_handler_id: {self.id}"
-                    )
                     self.is_running = False
                     self.barrier.wait()
-                    logging.info(
-                        f"action: salgo de la barrera | client_handler_id: {self.id}"
-                    )
                 else:   
                     store_bets(data)
                     logging.info(
