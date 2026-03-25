@@ -1,12 +1,12 @@
 from common.blocking_socket.blocking_socket import BlockingSocket
 from common.client_handler.client_handler import ClientHandler
 from common.lottery.lottery import Lottery
+from common.lottery.lottery_monitor import LotteryMonitor
 import socket
 import logging
 import signal
 import sys
-
-
+from threading import Thread, Barrier
 class Server:
     def __init__(self, port, listen_backlog, amount_of_clients):
         self.__acceptor_socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,9 +14,10 @@ class Server:
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
         self.__client_handlers : list[ClientHandler] = []
-        self.lottery = Lottery(amount_of_clients)
+        self.lottery_monitor = LotteryMonitor(Lottery(amount_of_clients))
         self.amount_of_clients = amount_of_clients
         self.is_running = True
+        self.barrier = Barrier(amount_of_clients, self.__handle_query_phase)
 
     def run(self):
         """
@@ -28,11 +29,9 @@ class Server:
         """
         while self.is_running:
             skt = self.__accept_new_connection()
-            self.__client_handlers.append(ClientHandler(skt, self.lottery))
-            self.__client_handlers[-1].run()
-            if self.lottery.check_finished():        
-                self.__handle_query_phase()
-                self.is_running = False
+            self.__client_handlers.append(ClientHandler(skt, self.lottery_monitor, self.barrier))
+            Thread(target=self.__client_handlers[-1].run).start()
+            
 
     def __handle_query_phase(self):
         clients_satisfied = 0

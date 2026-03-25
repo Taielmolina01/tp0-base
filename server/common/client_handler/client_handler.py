@@ -1,19 +1,26 @@
 from common.protocol.protocol import Protocol
+from common.blocking_socket.blocking_socket import BlockingSocket
 from common.protocol.exceptions.eoc_exception import EndOfCommunicationException
 from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
 from common.utils import store_bets
 import logging
-
+from common.lottery.lottery_monitor import LotteryMonitor
+from threading import Barrier
 
 class ClientHandler:
-    def __init__(self, skt, lottery):
+    def __init__(
+            self, 
+            skt: BlockingSocket, 
+            lottery_monitor: LotteryMonitor,
+            barrier: Barrier,
+            ):
         self.is_running = True
         self.__protocol = Protocol(skt)
-        self.lottery = lottery
+        self.lottery_monitor = lottery_monitor
         self.id = self.__protocol.receive_agency_id()
-        
+        self.barrier = barrier
 
     def run(self):
         """
@@ -25,17 +32,18 @@ class ClientHandler:
             try:
                 data, ended = self.__protocol.receive_operation()
                 if ended:
-                    if not self.lottery.check_agency_as_finished(self.id):
+                    if not self.lottery_monitor.check_agency_as_finished(self.id):
                         logging.error(
                             f"action: apuesta_recibida | result: fail | error: bad agency number"
                         )
                     self.is_running = False
+                    self.barrier.wait()
                 else:   
                     store_bets(data)
                     logging.info(
                         f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                     )
-                    self.lottery.store_bets_per_agency(self.id, data)
+                    self.lottery_monitor.store_bets_per_agency(self.id, data)
                     self.__protocol.send_ack_bet()
             except EndOfCommunicationException:
                 self.is_running = False
@@ -58,7 +66,7 @@ class ClientHandler:
                 self.is_running = False
 
     def inform_agency_result(self):
-        self.__protocol.send_results_to_agency(self.lottery.get_winners_of_agency(self.id))
+        self.__protocol.send_results_to_agency(self.lottery_monitor.get_winners_of_agency(self.id))
     
     def had_received_query_winners(self):
         return self.__protocol.had_received_query_winners()
