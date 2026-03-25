@@ -7,6 +7,7 @@ import logging
 import signal
 import sys
 from threading import Thread, Barrier
+
 class Server:
     def __init__(self, port, listen_backlog, amount_of_clients):
         self.__acceptor_socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
