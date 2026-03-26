@@ -43,8 +43,6 @@ def get_network_lines() -> list[str]:
     ]
 
 
-
-
 def generate_compose_file(output_file: str, amount_of_clients: int):
     with open(output_file, "w") as f:
         for line in get_server_lines():
