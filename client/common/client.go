@@ -112,4 +112,5 @@ func (c *Client) CloseGracefully() {
 		"action: close_client_socket | result: success | client_id: %v",
 		c.id,
 	)
+
 }
