@@ -107,13 +107,7 @@ func (c *Client) StartClientLoop() {
 
 	}
 
-	if err != nil {
-		c.logger.Criticalf(
-			"action: exit_protocol | result: fail | client_id: %v | error: %v",
-			c.id,
-			err,
-		)
-	}
+	c.CloseGracefully()
 
 	c.logger.Infof("action: loop_finished | result: success | client_id: %v", c.id)
 }
