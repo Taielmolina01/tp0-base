@@ -186,3 +186,24 @@ Propongo una abstracción que sea el reader de las bets y que vaya leyendo el ar
 
 No termine de entender cuando se procesaría mal el batch del lado del server asique basicamente atrapé los errores posibles que sería que me hayan pasado mal la cantidad de fields de la bet (siendo los fields el resultado de splittear por ',') o que haya un error de parseo por lo cual me pasaron con type erroneo algun field de la bet.
 
+## Como correr ej6
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+make docker-compose-up
+```
