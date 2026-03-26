@@ -4,16 +4,16 @@ from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
 from common.utils import store_bets, load_bets, has_won
+from common.lottery.lottery import Lottery
 import logging
 
 
 class ClientHandler:
-    def __init__(self, skt, lottery):
+    def __init__(self, skt, lottery: Lottery):
         self.is_running = True
         self.__protocol = Protocol(skt)
-        self.lottery = lottery
+        self.lottery: Lottery = lottery
         self.id = self.__protocol.receive_agency_id()
-        
 
     def run(self):
         """
@@ -25,7 +25,7 @@ class ClientHandler:
             try:
                 data, ended = self.__protocol.receive_operation()
                 if ended:
-                    if not self.lottery.check_agency_as_finished(self.id):
+                    if not self.lottery.check_agency_as_finished():
                         logging.error(
                             f"action: apuesta_recibida | result: fail | error: bad agency number"
                         )
@@ -57,7 +57,7 @@ class ClientHandler:
                 self.is_running = False
 
     def inform_agency_result(self):
-        self.__protocol.send_results_to_agency([bet.document for bet in load_bets() if bet.agency == self.id and has_won(bet)])
+        self.__protocol.send_results_to_agency([int(bet.document) for bet in load_bets() if bet.agency == self.id and has_won(bet)])
     
     def had_received_query_winners(self):
         return self.__protocol.had_received_query_winners()
