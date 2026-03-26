@@ -3,7 +3,7 @@ from common.protocol.exceptions.eoc_exception import EndOfCommunicationException
 from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
-from common.utils import store_bets, load_bets, has_won
+from common.utils import load_bets, has_won
 from common.lottery.lottery import Lottery
 import logging
 from threading import Barrier
@@ -73,7 +73,7 @@ class ClientHandler:
         self.__protocol.send_results_to_agency(
             [
                 int(bet.document)
-                for bet in self.server_monitor.load_bets_safe()
+                for bet in load_bets()
                 if bet.agency == self.id and has_won(bet)
             ]
         )
