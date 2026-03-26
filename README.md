@@ -183,3 +183,17 @@ Respetar el formato y contenido las entradas de logs descritas en los ejercicios
 ## Solución ej 1
 
 Generé un script de Python que vaya generando las lineas del compose. Me incliné por dejarlas en listas a las lineas por una cuestión únicamente de legibilidad, podrían haber sido constantes y despues simplemente las formateaba.
+
+## Como correr ej1
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+```
