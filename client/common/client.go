@@ -91,7 +91,7 @@ func (c *Client) StartClientLoop() {
 func (c *Client) CloseGracefully() {
 	if c.conn == nil {
 		log.Infof(
-			"action: close_client_socket | result: no active connection | client_id: %v",
+			"action: close_client_socket | result: success | client_id: %v",
 			c.config.ID,
 		)
 		return
