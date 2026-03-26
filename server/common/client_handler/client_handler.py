@@ -33,13 +33,13 @@ class ClientHandler:
                 data, ended = self.__protocol.receive_operation()
                 if ended:
                     self.is_running = False
+                    self.barrier.wait()
                 else:
                     self.server_monitor.store_bets_safe(data)
                     logging.info(
                         f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                     )
                     self.__protocol.send_ack_bet()
-                    self.barrier.wait()
             except EndOfCommunicationException:
                 self.is_running = False
             except BadAmountOfFieldsInBet as e:
@@ -59,7 +59,8 @@ class ClientHandler:
             except OSError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
                 self.is_running = False
-        self.inform_agency_result()
+        if self.__protocol.had_received_query_winners:
+            self.inform_agency_result()
         self.close()
 
     def inform_agency_result(self):

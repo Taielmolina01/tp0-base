@@ -180,9 +180,8 @@ Se proveen [pruebas automáticas](https://github.com/7574-sistemas-distribuidos/
 El incumplimiento de las pruebas es condición de desaprobación, pero su cumplimiento no es suficiente para la aprobación.  Se pide a los alumnos leer atentamente y **tener en cuenta** los criterios de corrección informados  [en el campus](https://campusgrado.fi.uba.ar/mod/page/view.php?id=73393).
 Respetar el formato y contenido las entradas de logs descritas en los ejercicios, pues son las que se chequean en cada uno de los tests.
 
-## Solución ej 7
+## Solución ej 8
 
-Al ser secuencial este ejercicio, al finalizar la ejecución de cada uno de los clientes lo que hago es verificar si ya terminaron de pushear sus apuestas todos los clientes, utilizando la abstracción de Lottery. La idea es que cuando se cumpla que todos hayan enviado, simplemente me voy bloqueando en el socket de cada cliente esperando su QUERY_MSG, y cuando lo recibo lo que hago es recorrer el archivo aprovechando el yield (que entiendo que es una especie de iterador lo que devuelve la función, y no una lista como tiene el type hint) y verificando si ganaron y para esa agencia. en cuyo caso lo voy agregando a la lista de ganadores de esa agencia en particular.
+En este ejercicio lo que hago es utilizar una barrera para sincronizar la cantidad de clientes que enviaron todas sus bets. 
 
-Obviamente agrego métodos para enviar y recibir los winners desde el server y client, respectivamente.
-
+Utilizo un monitor para proteger el recurso compartido que es el archivo de bets. Cada vez que recibo un batch de apuestas de un client nuevo, me lockeo y accedo al archivo para escribir. En el caso de que haya llegado al batch final me trabo en la barrera que comparten los ClientHandler. Al salir de la barrera le envio los ganadores a mi agencia para que sepa, accediendo al recurso compartido **pero** estoy seguro que todos los threads ya terminaron su tarea de escritura, por lo cual accedo sin protección de un lock, ya que todos mis pares (otros ClientHandler) van a acceder a él en modo lectura.
