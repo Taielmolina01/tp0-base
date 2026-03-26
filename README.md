@@ -183,3 +183,29 @@ Respetar el formato y contenido las entradas de logs descritas en los ejercicios
 ## Solución ej 3
 
 En este ejercicio lo que hice fue generar un container con la imagen de alpine, que entiendo que es bastante minima, y ejecute un script de bash de manera no interactiva que se ejecuta ni bien se levanta el container, donde primero que nada le instalo netcat por las dudas, y luego usando echo+nc y el operador $() que captura el stdout del comando que ejecutes dentro, valido que la response sea efectivamente el mensaje que había enviado antes, validando el correcto funcionamiento del echo server.
+
+## Como correr ej3
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+chmod +x validar-echo-server.sh
+./validar-echo-server.sh
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+make docker-compose-up
+chmod +x validar-echo-server.sh
+./validar-echo-server.sh
+```
