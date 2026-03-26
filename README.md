@@ -183,3 +183,40 @@ Respetar el formato y contenido las entradas de logs descritas en los ejercicios
 ## Solución ej 4
 
 En este ejercicio busque como manejar las signals con la standard library de ambos lenguajes, y basandome en ello, plantee dos handlers para cerrar todos los fds. En el caso de Go se tiene que hacer con goroutines+channels porque es la forma de manejar la asincronía que ofrece el mismo. En el caso de Python es menos explícito lo que pasa a nivel async.
+
+## Como correr ej3
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+make docker-compose-up
+```
+
+para matar un container y por lo cual ver la salida graceful, abris otra terminal y pones
+
+```
+docker stop ${container_name} -t ${graceful_times}
+```
+
+y se ve como el container desaparece dejando los mensajes 
+
+```
+client2  | 2026-03-26 13:48:12 INFO     action: close_client_socket | result: success | client_id: 2
+client2 exited with code 0
+```
+
+Aclaración: en el ejemplo de arriba el container stoppeado es el client2.
