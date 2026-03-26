@@ -81,6 +81,8 @@ func (c *Client) StartClientLoop() {
 			msg,
 		)
 
+		c.CloseGracefully()
+
 		// Wait a time between sending one message and the next one
 		time.Sleep(c.config.LoopPeriod)
 
@@ -103,8 +105,10 @@ func (c *Client) CloseGracefully() {
 		)
 	}
 
+	c.conn = nil
 	log.Info(
 		"action: close_client_socket | result: success | client_id: %v",
 		c.config.ID,
 	)
+
 }
