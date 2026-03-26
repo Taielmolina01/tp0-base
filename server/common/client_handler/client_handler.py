@@ -3,7 +3,7 @@ from common.protocol.exceptions.eoc_exception import EndOfCommunicationException
 from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
-from common.utils import store_bets
+from common.utils import store_bets, load_bets, has_won
 import logging
 
 
@@ -35,7 +35,6 @@ class ClientHandler:
                     logging.info(
                         f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
                     )
-                    self.lottery.store_bets_per_agency(self.id, data)
                     self.__protocol.send_ack_bet()
             except EndOfCommunicationException:
                 self.is_running = False
@@ -58,7 +57,7 @@ class ClientHandler:
                 self.is_running = False
 
     def inform_agency_result(self):
-        self.__protocol.send_results_to_agency(self.lottery.get_winners_of_agency(self.id))
+        self.__protocol.send_results_to_agency([bet.document for bet in load_bets() if bet.agency == self.id and has_won(bet)])
     
     def had_received_query_winners(self):
         return self.__protocol.had_received_query_winners()
