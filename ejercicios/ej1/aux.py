@@ -1,4 +1,4 @@
-def get_server_lines() -> str:
+def get_server_lines() -> list[str]:
     return [
         "name: tp0\n",
         "services:\n",
@@ -14,7 +14,7 @@ def get_server_lines() -> str:
     ]
 
 
-def get_client_lines(client_number: int) -> str:
+def get_client_lines(client_number: int) -> list[str]:
     return [
         f"  client{client_number}:\n",
         f"    container_name: client{client_number}\n",
@@ -30,7 +30,7 @@ def get_client_lines(client_number: int) -> str:
     ]
 
 
-def get_network_lines() -> str:
+def get_network_lines() -> list[str]:
     return [
         "networks:\n",
         "  testing_net:\n",
