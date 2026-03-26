@@ -45,6 +45,7 @@ def get_network_lines() -> list[str]:
         "        - subnet: 172.25.125.0/24\n\n",
     ]
 
+
 def generate_compose_file(
     output_file: str,
     amount_of_clients: int,

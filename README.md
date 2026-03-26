@@ -180,13 +180,9 @@ Se proveen [pruebas automáticas](https://github.com/7574-sistemas-distribuidos/
 El incumplimiento de las pruebas es condición de desaprobación, pero su cumplimiento no es suficiente para la aprobación.  Se pide a los alumnos leer atentamente y **tener en cuenta** los criterios de corrección informados  [en el campus](https://campusgrado.fi.uba.ar/mod/page/view.php?id=73393).
 Respetar el formato y contenido las entradas de logs descritas en los ejercicios, pues son las que se chequean en cada uno de los tests.
 
-## Solución ej 5
+## Solución ej 6
 
-De ambos lados (cliente y servidor) implemento interfaces/clases que envuelvan la lógica de mi socket bloqueante para tener separada esa capa. Luego también tengo una capa separada para el manejo del protocolo, siendo el encargado de recibir objetos de dominio y serializarlos para luego enviarlos; o en el caso del lado receiver, deserializarlo para luego retornar el dicho objeto de dominio.
+Propongo una abstracción que sea el reader de las bets y que vaya leyendo el archivo hasta el final, stoppeando por cada vez que llego al fin del batch. Esto se da cuando llego a la cantidad max de bytes en todo el batch o cuando llego a la cantidad de rows determinado por el config del client.
 
-Respecto al protocolo es binario y simplemente envio los campos separados por un delimitador que es la ','.
-
-Antes de mandar un mensaje en si mando códigos (1 byte) para identificar la operación que voy a enviar (en el caso del ack y del fin son simplemente los códigos lo que se envian). En el caso de enviar un SEND_BET_CODE, estoy avisando que lo que viene es la apuesta en sí. Lo que sigue es un número de dos bytes en big endian que avisa cual va ser el largo del payload (la bet) y luego la bet en sí. A nivel código me estoy trabando en cada uno de estos envíos para no hacer short write y para enviar toda la data que necesito para procesar del otro lado. 
-
-Entiendo que la capa TCP es quien se encarga de manejar como enviar estos datos (si en mensajes TCP distintos o el mismo). Me gustaría tener un poco más de control sobre esto pero entiendo que es imposible y toca confiar en que TCP hace las cosas bien (cosa que hago je).
+No termine de entender cuando se procesaría mal el batch del lado del server asique basicamente atrapé los errores posibles que sería que me hayan pasado mal la cantidad de fields de la bet (siendo los fields el resultado de splittear por ',') o que haya un error de parseo por lo cual me pasaron con type erroneo algun field de la bet.
 
