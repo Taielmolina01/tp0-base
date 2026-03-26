@@ -185,3 +185,17 @@ Respetar el formato y contenido las entradas de logs descritas en los ejercicios
 Simplemente modifique el script del ej1 para que los clientes y el servidor usen volumes. 
 
 Por lo que estuve viendo hay una distinción entre named volumes y bind mounts, siendo la segunda lo que está implementeado en este ejercicio, y entiendo que era lo más apropiado. Lo único me queda la duda si había una forma de generar este ejercicio usando named volumes y que efectivamente se pueda actualizar la data dentro del compose si la modificas en el la pc host.
+
+## Como correr ej2
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+```
