@@ -107,8 +107,6 @@ func (c *Client) StartClientLoop() {
 
 	}
 
-	err = c.protocol.Exit()
-
 	if err != nil {
 		c.logger.Criticalf(
 			"action: exit_protocol | result: fail | client_id: %v | error: %v",
@@ -121,16 +119,16 @@ func (c *Client) StartClientLoop() {
 }
 
 func (c *Client) CloseGracefully() {
-	err := c.protocol.Exit()
-	if err != nil {
-		c.logger.Criticalf(
-			"action: close_socket | result: fail | client_id: %v | error: %v",
+	if err := c.protocol.Exit(); err != nil {
+		c.logger.Fatalf(
+			"action: close_client_socket | result: fail | client_id: %v | error: %v",
 			c.id,
 			err,
 		)
 	}
 	c.logger.Info(
-		"action: close_socket | result: fail | client_id: %v",
+		"action: close_client_socket | result: success | client_id: %v",
 		c.id,
 	)
+
 }

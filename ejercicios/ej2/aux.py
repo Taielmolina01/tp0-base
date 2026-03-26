@@ -45,11 +45,6 @@ def get_network_lines() -> list[str]:
         "        - subnet: 172.25.125.0/24\n\n",
     ]
 
-
-def get_volumes_lines() -> list[str]:
-    return ["volumes:\n", "  server_config:\n", "  client_config:\n"]
-
-
 def generate_compose_file(
     output_file: str,
     amount_of_clients: int,
@@ -61,6 +56,4 @@ def generate_compose_file(
             for line in get_client_lines(i):
                 f.write(line)
         for line in get_network_lines():
-            f.write(line)
-        for line in get_volumes_lines():
             f.write(line)

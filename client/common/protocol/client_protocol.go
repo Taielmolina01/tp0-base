@@ -25,6 +25,7 @@ type ClientProtocol interface {
 
 type ClientProtocolImpl struct {
 	serverAddress string
+	logger        *logging.Logger
 	socket        socket.Socket
 }
 
@@ -33,6 +34,7 @@ func CreateClientProtocol(
 	logger *logging.Logger) ClientProtocol {
 	return &ClientProtocolImpl{
 		serverAddress: serverAddress,
+		logger:        logger,
 	}
 }
 
@@ -98,8 +100,5 @@ func (c *ClientProtocolImpl) sendBigEndianNumber(number int) error {
 
 func (c *ClientProtocolImpl) Exit() error {
 	c.socket.SendAll([]byte{FIN_CODE})
-	if err := c.socket.Close(); err != nil {
-		return err
-	}
-	return nil
+	return c.socket.Close()
 }

@@ -17,6 +17,7 @@ BIRTHDATE_FIELD_INDEX = 4
 BET_NUMBER_FIELD_INDEX = 5
 
 
+
 class Protocol:
     def __init__(self, sock=None):
         if isinstance(sock, BlockingSocket):
