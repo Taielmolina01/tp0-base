@@ -180,9 +180,9 @@ Se proveen [pruebas automáticas](https://github.com/7574-sistemas-distribuidos/
 El incumplimiento de las pruebas es condición de desaprobación, pero su cumplimiento no es suficiente para la aprobación.  Se pide a los alumnos leer atentamente y **tener en cuenta** los criterios de corrección informados  [en el campus](https://campusgrado.fi.uba.ar/mod/page/view.php?id=73393).
 Respetar el formato y contenido las entradas de logs descritas en los ejercicios, pues son las que se chequean en cada uno de los tests.
 
-## Solución ej 6
+## Solución ej 7
 
-Propongo una abstracción que sea el reader de las bets y que vaya leyendo el archivo hasta el final, stoppeando por cada vez que llego al fin del batch. Esto se da cuando llego a la cantidad max de bytes en todo el batch o cuando llego a la cantidad de rows determinado por el config del client.
+Al ser secuencial este ejercicio, al finalizar la ejecución de cada uno de los clientes lo que hago es verificar si ya terminaron de pushear sus apuestas todos los clientes, utilizando la abstracción de Lottery. La idea es que cuando se cumpla que todos hayan enviado, simplemente me voy bloqueando en el socket de cada cliente esperando su QUERY_MSG, y cuando lo recibo lo que hago es recorrer el archivo aprovechando el yield (que entiendo que es una especie de iterador lo que devuelve la función, y no una lista como tiene el type hint) y verificando si ganaron y para esa agencia. en cuyo caso lo voy agregando a la lista de ganadores de esa agencia en particular.
 
-No termine de entender cuando se procesaría mal el batch del lado del server asique basicamente atrapé los errores posibles que sería que me hayan pasado mal la cantidad de fields de la bet (siendo los fields el resultado de splittear por ',') o que haya un error de parseo por lo cual me pasaron con type erroneo algun field de la bet.
+Obviamente agrego métodos para enviar y recibir los winners desde el server y client, respectivamente.
 
