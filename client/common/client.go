@@ -66,7 +66,7 @@ func (c *Client) StartClientLoop() {
 			msgID,
 		)
 		msg, err := bufio.NewReader(c.conn).ReadString('\n')
-		c.conn.Close()
+		c.CloseGracefully()
 
 		if err != nil {
 			log.Errorf("action: receive_message | result: fail | client_id: %v | error: %v",
@@ -80,8 +80,6 @@ func (c *Client) StartClientLoop() {
 			c.config.ID,
 			msg,
 		)
-
-		c.CloseGracefully()
 
 		// Wait a time between sending one message and the next one
 		time.Sleep(c.config.LoopPeriod)
