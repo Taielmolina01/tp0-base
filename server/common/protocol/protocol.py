@@ -6,6 +6,7 @@ from common.protocol.eoc_exception import EndOfCommunicationException
 ACK_CODE = 0x03
 FIN_CODE = 0x05
 
+
 class Protocol:
     def __init__(self, sock=None):
         if isinstance(sock, BlockingSocket):
@@ -20,15 +21,15 @@ class Protocol:
         if code == FIN_CODE:
             raise EndOfCommunicationException()
         return self.__receive_bet()
-    
+
     def __receive_bet(self):
-        length = int.from_bytes(self.socket.receive_all(2), byteorder='big')
+        length = int.from_bytes(self.socket.receive_all(2), byteorder="big")
         bet_msg = self.socket.receive_all(length)
         return self.__create_bet(str(bet_msg))
 
     def __create_bet(self, msg):
-        real_msg = msg[2:len(msg)-2]
-        fields = real_msg.split(',')
+        real_msg = msg[2 : len(msg) - 2]
+        fields = real_msg.split(",")
         return Bet(0, fields[0], fields[1], fields[2], fields[3], fields[4])
 
     def send_ack_bet(self):

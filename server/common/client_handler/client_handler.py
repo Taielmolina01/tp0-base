@@ -3,6 +3,7 @@ from common.protocol.eoc_exception import EndOfCommunicationException
 from common.utils import store_bets
 import logging
 
+
 class ClientHandler:
     def __init__(self, skt):
         self.is_running = True
@@ -18,7 +19,9 @@ class ClientHandler:
             try:
                 data = self.__protocol.receive_operation()
                 store_bets([data])
-                logging.info(f"action: apuesta_almacenada | result: success | dni: {data.document} | numero: {data.number}")            
+                logging.info(
+                    f"action: apuesta_almacenada | result: success | dni: {data.document} | numero: {data.number}"
+                )
                 self.__protocol.send_ack_bet()
             except EndOfCommunicationException as e:
                 self.is_running = False
