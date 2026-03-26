@@ -1,7 +1,5 @@
 from common.blocking_socket.blocking_socket import BlockingSocket
 from common.client_handler.client_handler import ClientHandler
-from common.lottery.lottery import Lottery
-from common.lottery.lottery_monitor import LotteryMonitor
 from common.server_monitor.server_monitor import ServerMonitor
 import socket
 import logging
@@ -18,7 +16,6 @@ class Server:
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
         self.__client_handlers: list[ClientHandler] = []
         self.__client_threads: list[Thread] = []
-        self.lottery_monitor = LotteryMonitor(Lottery(amount_of_clients))
         self.amount_of_clients = amount_of_clients
         self.is_running = True
         self.barrier = Barrier(amount_of_clients)

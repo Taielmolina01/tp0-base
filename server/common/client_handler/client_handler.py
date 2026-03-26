@@ -4,7 +4,6 @@ from common.protocol.exceptions.bad_amount_fields_bet import (
     BadAmountOfFieldsInBet,
 )
 from common.utils import load_bets, has_won
-from common.lottery.lottery import Lottery
 import logging
 from threading import Barrier
 from common.server_monitor.server_monitor import ServerMonitor
@@ -14,13 +13,11 @@ class ClientHandler:
     def __init__(
         self,
         skt,
-        lottery: Lottery,
         server_monitor: ServerMonitor,
         barrier: Barrier,
     ):
         self.is_running = True
         self.__protocol = Protocol(skt)
-        self.lottery: Lottery = lottery
         self.id = self.__protocol.receive_agency_id()
         self.barrier = barrier
         self.server_monitor = server_monitor
@@ -35,10 +32,6 @@ class ClientHandler:
             try:
                 data, ended = self.__protocol.receive_operation()
                 if ended:
-                    if not self.lottery.check_agency_as_finished():
-                        logging.error(
-                            f"action: apuesta_recibida | result: fail | error: bad agency number"
-                        )
                     self.is_running = False
                 else:
                     self.server_monitor.store_bets_safe(data)
