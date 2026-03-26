@@ -191,6 +191,13 @@ Por lo que estuve viendo hay una distinción entre named volumes y bind mounts, 
 ```
 chmod +x generar-compose.sh
 ./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
 ```
 
 Ejemplo
