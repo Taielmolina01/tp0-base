@@ -65,9 +65,11 @@ class ClientHandler:
             except OSError as e:
                 logging.error(f"action: receive_message | result: fail | error: {e}")
                 self.is_running = False
+        self.inform_agency_result()
+        self.close()
 
     def inform_agency_result(self):
-        self.__protocol.send_results_to_agency([int(bet.document) for bet in load_bets() if bet.agency == self.id and has_won(bet)])
+        self.__protocol.send_results_to_agency([int(bet.document) for bet in self.server_monitor.load_bets_safe() if bet.agency == self.id and has_won(bet)])
     
     def had_received_query_winners(self):
         return self.__protocol.had_received_query_winners()

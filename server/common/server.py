@@ -36,12 +36,7 @@ class Server:
             self.__client_handlers.append(ClientHandler(skt, self.lottery_monitor, self.server_monitor, self.barrier))
             self.__client_threads.append(Thread(target=self.__client_handlers[-1].run))
             self.__client_threads[-1].start()
-        
-        self.lottery_monitor.check_finished()
-        self.__handle_query_phase()
-
-        for thread in self.__client_threads:
-            thread.join()
+    
 
     def __accept_new_connection(self):
         """
@@ -65,6 +60,8 @@ class Server:
     def __handle_exit(self):
         for client_handler in self.__client_handlers:
             client_handler.close()
+        for thread in self.__client_threads:
+            thread.join()
         self.__client_handlers = []
         self.__close_acceptor_socket()
         sys.exit(0)
