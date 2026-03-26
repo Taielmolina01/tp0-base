@@ -89,6 +89,22 @@ func (c *Client) StartClientLoop() {
 }
 
 func (c *Client) CloseGracefully() {
-	c.conn.Close()
-	log.Info("Closing client socket ...")
+	if c.conn == nil {
+		log.Infof(
+			"action: close_client_socket | result: no active connection | client_id: %v",
+			c.config.ID,
+		)
+	}
+	if err := c.conn.Close(); err != nil {
+		log.Fatalf(
+			"action: close_client_socket | result: fail | client_id: %v | error: %v",
+			c.config.ID,
+			err,
+		)
+	}
+
+	log.Info(
+		"action: close_client_socket | result: success | client_id: %v",
+		c.config.ID,
+	)
 }
