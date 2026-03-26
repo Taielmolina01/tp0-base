@@ -11,10 +11,11 @@ import (
 
 // Client Entity that encapsulates how
 type Client struct {
-	loopConfig config.ClientLoopConfig
-	id         int
-	protocol   protocol.ClientProtocol
-	logger     *logging.Logger
+	loopConfig     config.ClientLoopConfig
+	id             int
+	protocol       protocol.ClientProtocol
+	logger         *logging.Logger
+	batchMaxAmount int
 }
 
 // NewClient Initializes a new client receiving the configuration
@@ -22,13 +23,15 @@ type Client struct {
 func NewClient(
 	clientServerConfig config.ClientServerConfig,
 	clientLoopConfig config.ClientLoopConfig,
+	batchMaxAmount int,
 ) *Client {
 	logger := logging.MustGetLogger("log")
 	client := &Client{
-		loopConfig: clientLoopConfig,
-		id:         clientServerConfig.ID,
-		protocol:   protocol.CreateClientProtocol(clientServerConfig.ServerAddress, logger),
-		logger:     logger,
+		loopConfig:     clientLoopConfig,
+		id:             clientServerConfig.ID,
+		protocol:       protocol.CreateClientProtocol(clientServerConfig.ServerAddress, logger),
+		logger:         logger,
+		batchMaxAmount: batchMaxAmount,
 	}
 	return client
 }
@@ -48,7 +51,7 @@ func (c *Client) StartClientLoop() {
 		return
 	}
 
-	reader, err := bet.CreateBetsReader(c.id)
+	reader, err := bet.CreateBetsReader(c.id, c.batchMaxAmount)
 
 	if err != nil {
 		c.logger.Criticalf(
@@ -125,16 +128,16 @@ func (c *Client) StartClientLoop() {
 }
 
 func (c *Client) CloseGracefully() {
-	err := c.protocol.Exit()
-	if err != nil {
-		c.logger.Criticalf(
-			"action: close_socket | result: fail | client_id: %v | error: %v",
+	if err := c.protocol.Exit(); err != nil {
+		c.logger.Fatalf(
+			"action: close_client_socket | result: fail | client_id: %v | error: %v",
 			c.id,
 			err,
 		)
 	}
 	c.logger.Info(
-		"action: close_socket | result: fail | client_id: %v",
+		"action: close_client_socket | result: success | client_id: %v",
 		c.id,
 	)
+
 }

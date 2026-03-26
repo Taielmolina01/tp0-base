@@ -28,6 +28,7 @@ type ClientProtocol interface {
 
 type ClientProtocolImpl struct {
 	serverAddress string
+	logger        *logging.Logger
 	socket        socket.Socket
 }
 
@@ -36,6 +37,7 @@ func CreateClientProtocol(
 	logger *logging.Logger) ClientProtocol {
 	return &ClientProtocolImpl{
 		serverAddress: serverAddress,
+		logger:        logger,
 	}
 }
 

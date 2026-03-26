@@ -23,8 +23,6 @@ def initialize_config():
     # If config.ini does not exists original config object is not modified
     config.read(CONFIG_FILE_PATH)
 
-    
-
     config_params = {}
     try:
         config_params["port"] = int(

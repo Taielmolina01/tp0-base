@@ -39,7 +39,7 @@ class BlockingSocket:
             data.append(chunk)
             bytes_received += len(chunk)
         return b"".join(data)
-    
+
     def close(self):
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()

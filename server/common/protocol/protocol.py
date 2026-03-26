@@ -34,7 +34,7 @@ class Protocol:
         if not code:
             return False
         return code[0] == QUERY_WINNERS_CODE
-    
+
     def receive_agency_id(self):
         return self.socket.receive_all(1)[0]
 
@@ -44,7 +44,7 @@ class Protocol:
             return [], True
         else:
             return self.__receive_bets(), False
-        
+
     def send_results_to_agency(self, winners):
         self.__send_big_endian_two_bytes_number(len(winners))
         for winner in winners:
@@ -85,12 +85,12 @@ class Protocol:
             fields[BIRTHDATE_FIELD_INDEX],
             fields[BET_NUMBER_FIELD_INDEX],
         )
-    
+
     def __send_big_endian_two_bytes_number(self, number):
-        self.socket.send_all(number.to_bytes(2, byteorder='big'))
+        self.socket.send_all(number.to_bytes(2, byteorder="big"))
 
     def __send_big_endian_four_bytes_number(self, number):
-        self.socket.send_all(number.to_bytes(4, byteorder='big'))
-    
+        self.socket.send_all(number.to_bytes(4, byteorder="big"))
+
     def __receive_big_endian_number(self):
         return int.from_bytes(self.socket.receive_all(2), byteorder="big")

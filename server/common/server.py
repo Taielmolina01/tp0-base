@@ -13,7 +13,7 @@ class Server:
         self.__acceptor_socket.bind(("", port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
-        self.__client_handlers : list[ClientHandler] = []
+        self.__client_handlers: list[ClientHandler] = []
         self.lottery = Lottery(amount_of_clients)
         self.amount_of_clients = amount_of_clients
         self.is_running = True
@@ -35,11 +35,11 @@ class Server:
                 self.is_running = False
 
     def __handle_query_phase(self):
-        for client in self.__client_handlers: 
+        for client in self.__client_handlers:
             if client.had_received_query_winners():
                 # Should be always true
                 client.inform_agency_result()
-                
+
     def __accept_new_connection(self):
         """
         Accept new connections

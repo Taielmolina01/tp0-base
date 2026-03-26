@@ -30,7 +30,7 @@ class ClientHandler:
                             f"action: apuesta_recibida | result: fail | error: bad agency number"
                         )
                     self.is_running = False
-                else:   
+                else:
                     store_bets(data)
                     logging.info(
                         f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
@@ -57,8 +57,14 @@ class ClientHandler:
                 self.is_running = False
 
     def inform_agency_result(self):
-        self.__protocol.send_results_to_agency([int(bet.document) for bet in load_bets() if bet.agency == self.id and has_won(bet)])
-    
+        self.__protocol.send_results_to_agency(
+            [
+                int(bet.document)
+                for bet in load_bets()
+                if bet.agency == self.id and has_won(bet)
+            ]
+        )
+
     def had_received_query_winners(self):
         return self.__protocol.had_received_query_winners()
 

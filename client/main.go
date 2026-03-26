@@ -47,6 +47,7 @@ func InitConfig() (*viper.Viper, error) {
 	v.BindEnv("loop.period")
 	v.BindEnv("loop.amount")
 	v.BindEnv("log.level")
+	v.BindEnv("batch.maxAmount")
 
 	// Try to read configuration from config file. If config file
 	// does not exists then ReadInConfig will fail but configuration
@@ -65,6 +66,10 @@ func InitConfig() (*viper.Viper, error) {
 
 	if _, err := strconv.Atoi(v.GetString("id")); err != nil {
 		return nil, errors.Wrapf(err, "Could not parse CLI_ID env var as integer.")
+	}
+
+	if _, err := strconv.Atoi(v.GetString("batch.maxAmount")); err != nil {
+		return nil, errors.Wrapf(err, "Could not parse batch.maxAmount env var as integer.")
 	}
 
 	return v, nil
@@ -136,7 +141,7 @@ func main() {
 
 	signal.Notify(signals, syscall.SIGTERM)
 
-	client := common.NewClient(clientServerConfig, clientLoopConfig)
+	client := common.NewClient(clientServerConfig, clientLoopConfig, v.GetInt("batch.maxAmount"))
 
 	go func() {
 		<-signals
