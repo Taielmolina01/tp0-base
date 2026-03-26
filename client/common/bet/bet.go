@@ -29,7 +29,7 @@ func CreateBet(
 
 func (b Bet) String() string {
 	return fmt.Sprintf(
-		"{%s,%s,%v,%v,%v}",
+		"%s,%s,%v,%v,%v",
 		b.name,
 		b.lastName,
 		b.dni,

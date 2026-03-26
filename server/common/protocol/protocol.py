@@ -28,7 +28,7 @@ class Protocol:
         return self.__create_bet(str(bet_msg))
 
     def __create_bet(self, msg):
-        real_msg = msg[2 : len(msg) - 2]
+        real_msg = msg[1 : len(msg) - 1]
         fields = real_msg.split(",")
         return Bet(0, fields[0], fields[1], fields[2], fields[3], fields[4])
 
