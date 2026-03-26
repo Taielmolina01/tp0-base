@@ -36,6 +36,3 @@ networks:
       config:
         - subnet: 172.25.125.0/24
 
-volumes:
-  server_config:
-  client_config:

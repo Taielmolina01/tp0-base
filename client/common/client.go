@@ -89,8 +89,6 @@ func (c *Client) StartClientLoop() {
 
 	}
 
-	err = c.protocol.Exit()
-
 	if err != nil {
 		c.logger.Criticalf(
 			"action: exit_protocol | result: fail | client_id: %v | error: %v",
