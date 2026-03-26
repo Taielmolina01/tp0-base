@@ -32,9 +32,7 @@ class Server:
         while self.is_running:
             skt = self.__accept_new_connection()
             self.__client_handlers.append(
-                ClientHandler(
-                    skt, self.server_monitor, self.barrier
-                )
+                ClientHandler(skt, self.server_monitor, self.barrier)
             )
             self.__client_threads.append(Thread(target=self.__client_handlers[-1].run))
             self.__client_threads[-1].start()
