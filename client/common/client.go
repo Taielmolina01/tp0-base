@@ -96,6 +96,7 @@ func (c *Client) CloseGracefully() {
 			"action: close_client_socket | result: no active connection | client_id: %v",
 			c.config.ID,
 		)
+		return
 	}
 	if err := c.conn.Close(); err != nil {
 		log.Fatalf(
@@ -106,7 +107,7 @@ func (c *Client) CloseGracefully() {
 	}
 
 	c.conn = nil
-	log.Info(
+	log.Infof(
 		"action: close_client_socket | result: success | client_id: %v",
 		c.config.ID,
 	)
