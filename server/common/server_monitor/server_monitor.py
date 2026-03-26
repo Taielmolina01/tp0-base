@@ -1,6 +1,7 @@
 from common.utils import store_bets, load_bets, has_won
 from threading import Lock
 
+
 class ServerMonitor:
     def __init__(self):
         self.lock = Lock()

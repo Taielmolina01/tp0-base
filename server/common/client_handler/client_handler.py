@@ -11,12 +11,13 @@ from common.server_monitor.server_monitor import ServerMonitor
 
 
 class ClientHandler:
-    def __init__(self, 
-                skt, 
-                lottery: Lottery,
-                server_monitor: ServerMonitor,
-                barrier: Barrier, 
-                ):
+    def __init__(
+        self,
+        skt,
+        lottery: Lottery,
+        server_monitor: ServerMonitor,
+        barrier: Barrier,
+    ):
         self.is_running = True
         self.__protocol = Protocol(skt)
         self.lottery: Lottery = lottery
@@ -39,7 +40,7 @@ class ClientHandler:
                             f"action: apuesta_recibida | result: fail | error: bad agency number"
                         )
                     self.is_running = False
-                else:   
+                else:
                     self.server_monitor.store_bets_safe(data)
                     logging.info(
                         f"action: apuesta_recibida | result: success | cantidad: {self.__repr_bets(data)}"
@@ -69,8 +70,14 @@ class ClientHandler:
         self.close()
 
     def inform_agency_result(self):
-        self.__protocol.send_results_to_agency([int(bet.document) for bet in self.server_monitor.load_bets_safe() if bet.agency == self.id and has_won(bet)])
-    
+        self.__protocol.send_results_to_agency(
+            [
+                int(bet.document)
+                for bet in self.server_monitor.load_bets_safe()
+                if bet.agency == self.id and has_won(bet)
+            ]
+        )
+
     def had_received_query_winners(self):
         return self.__protocol.had_received_query_winners()
 

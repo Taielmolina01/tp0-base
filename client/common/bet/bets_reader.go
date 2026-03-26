@@ -24,13 +24,14 @@ type BetsReader interface {
 }
 
 type betsReaderImpl struct {
-	reader       *csv.Reader
-	buffered     []BetDto
-	agencyNumber int
+	reader         *csv.Reader
+	buffered       []BetDto
+	agencyNumber   int
+	maxBatchAmount int
 }
 
 func CreateBetsReader(
-	agencyNumber int,
+	agencyNumber, maxBatchAmount int,
 ) (BetsReader, error) {
 	file, err := os.Open(fmt.Sprintf(_DATA_FILEPATH, agencyNumber))
 	if err != nil {
@@ -40,8 +41,9 @@ func CreateBetsReader(
 	reader := csv.NewReader(file)
 
 	return &betsReaderImpl{
-		reader:       reader,
-		agencyNumber: agencyNumber,
+		reader:         reader,
+		agencyNumber:   agencyNumber,
+		maxBatchAmount: maxBatchAmount,
 	}, nil
 }
 
@@ -58,7 +60,7 @@ func (b *betsReaderImpl) ReadChunk() ([]BetDto, error) {
 			if err == io.EOF {
 				break
 			}
-			return nil, fmt.Errorf("error reading file: %w", err)
+			return nil, err
 		}
 
 		name, lastName := actualRow[_NAME_FIELD_INDEX], actualRow[_LAST_NAME_FIELD_INDEX]
@@ -97,6 +99,10 @@ func (b *betsReaderImpl) ReadChunk() ([]BetDto, error) {
 		}
 
 		result = append(result, actualBet)
+
+		if len(result) == b.maxBatchAmount {
+			break
+		}
 
 		read += len([]byte(actualBet.String()))
 	}

@@ -9,13 +9,14 @@ import signal
 import sys
 from threading import Thread, Barrier
 
+
 class Server:
     def __init__(self, port, listen_backlog, amount_of_clients):
         self.__acceptor_socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
         self.__acceptor_socket.bind(("", port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
-        self.__client_handlers : list[ClientHandler] = []
+        self.__client_handlers: list[ClientHandler] = []
         self.__client_threads: list[Thread] = []
         self.lottery_monitor = LotteryMonitor(Lottery(amount_of_clients))
         self.amount_of_clients = amount_of_clients
@@ -33,10 +34,13 @@ class Server:
         """
         while self.is_running:
             skt = self.__accept_new_connection()
-            self.__client_handlers.append(ClientHandler(skt, self.lottery_monitor, self.server_monitor, self.barrier))
+            self.__client_handlers.append(
+                ClientHandler(
+                    skt, self.lottery_monitor, self.server_monitor, self.barrier
+                )
+            )
             self.__client_threads.append(Thread(target=self.__client_handlers[-1].run))
             self.__client_threads[-1].start()
-    
 
     def __accept_new_connection(self):
         """

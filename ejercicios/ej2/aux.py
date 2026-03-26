@@ -1,6 +1,4 @@
-def get_server_lines(
-        amount_of_clients: int
-) -> list[str]:
+def get_server_lines(amount_of_clients: int) -> list[str]:
     return [
         "name: tp0\n",
         "services:\n",
@@ -10,8 +8,7 @@ def get_server_lines(
         "    entrypoint: python3 /main.py\n",
         "    environment:\n",
         "      - PYTHONUNBUFFERED=1\n",
-        f"      - AMOUNT_OF_CLIENTS={amount_of_clients}\n"
-        "    networks:\n",
+        f"      - AMOUNT_OF_CLIENTS={amount_of_clients}\n" "    networks:\n",
         "      - testing_net\n",
         "    volumes:\n",
         "      - ./server/config.ini:/config/config.ini\n\n",
@@ -49,10 +46,6 @@ def get_network_lines() -> list[str]:
     ]
 
 
-def get_volumes_lines() -> list[str]:
-    return ["volumes:\n", "  server_config:\n", "  client_config:\n"]
-
-
 def generate_compose_file(
     output_file: str,
     amount_of_clients: int,
@@ -64,6 +57,4 @@ def generate_compose_file(
             for line in get_client_lines(i):
                 f.write(line)
         for line in get_network_lines():
-            f.write(line)
-        for line in get_volumes_lines():
             f.write(line)

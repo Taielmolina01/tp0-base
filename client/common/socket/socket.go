@@ -58,5 +58,8 @@ func (s *SocketImpl) ReceiveAll(length uint) ([]byte, error) {
 }
 
 func (s *SocketImpl) Close() error {
+	if s.conn == nil {
+		return nil
+	}
 	return s.conn.Close()
 }
