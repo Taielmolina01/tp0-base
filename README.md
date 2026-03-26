@@ -207,3 +207,7 @@ chmod +x generar-compose.sh
 ./generar-compose.sh docker-compose-dev.yaml 2
 make docker-compose-up
 ```
+
+## Conclusión final
+
+Creo que la soluciones a los distintos ejercicios, principalment del 4 en adelante son mejorables a nivel código, probablemente se me escape el uso de alguna constante o errores "pequeños" similares, pero en general creo que lo desarrollado cumple con lo pedido y es un sistema escalable con las capas bien definidas. 

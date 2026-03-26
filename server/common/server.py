@@ -62,6 +62,7 @@ class Server:
         for thread in self.__client_threads:
             thread.join()
         self.__client_handlers = []
+        self.__client_threads = []
         self.__close_acceptor_socket()
         sys.exit(0)
 
