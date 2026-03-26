@@ -185,3 +185,25 @@ Respetar el formato y contenido las entradas de logs descritas en los ejercicios
 En este ejercicio lo que hago es utilizar una barrera para sincronizar la cantidad de clientes que enviaron todas sus bets. 
 
 Utilizo un monitor para proteger el recurso compartido que es el archivo de bets. Cada vez que recibo un batch de apuestas de un client nuevo, me lockeo y accedo al archivo para escribir. En el caso de que haya llegado al batch final me trabo en la barrera que comparten los ClientHandler. Al salir de la barrera le envio los ganadores a mi agencia para que sepa, accediendo al recurso compartido **pero** estoy seguro que todos los threads ya terminaron su tarea de escritura, por lo cual accedo sin protección de un lock, ya que todos mis pares (otros ClientHandler) van a acceder a él en modo lectura.
+
+## Como correr ej8
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+make docker-compose-up
+```
