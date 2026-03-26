@@ -30,17 +30,15 @@ class Server:
             skt = self.__accept_new_connection()
             self.__client_handlers.append(ClientHandler(skt, self.lottery))
             self.__client_handlers[-1].run()
-            if self.lottery.check_finished():        
+            if self.lottery.check_finished():
                 self.__handle_query_phase()
                 self.is_running = False
 
     def __handle_query_phase(self):
-        clients_satisfied = 0
-        while clients_satisfied != self.amount_of_clients:
-            for client in self.__client_handlers: 
-                if client.had_received_query_winners():
-                    clients_satisfied += 1
-                    client.inform_agency_result()
+        for client in self.__client_handlers: 
+            if client.had_received_query_winners():
+                # Should be always true
+                client.inform_agency_result()
                 
     def __accept_new_connection(self):
         """
