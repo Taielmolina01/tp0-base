@@ -190,3 +190,24 @@ Antes de mandar un mensaje en si mando códigos (1 byte) para identificar la ope
 
 Entiendo que la capa TCP es quien se encarga de manejar como enviar estos datos (si en mensajes TCP distintos o el mismo). Me gustaría tener un poco más de control sobre esto pero entiendo que es imposible y toca confiar en que TCP hace las cosas bien (cosa que hago je).
 
+## Como correr ej5
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+make docker-compose-up
+```
