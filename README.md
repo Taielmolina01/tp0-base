@@ -180,8 +180,6 @@ Se proveen [pruebas automáticas](https://github.com/7574-sistemas-distribuidos/
 El incumplimiento de las pruebas es condición de desaprobación, pero su cumplimiento no es suficiente para la aprobación.  Se pide a los alumnos leer atentamente y **tener en cuenta** los criterios de corrección informados  [en el campus](https://campusgrado.fi.uba.ar/mod/page/view.php?id=73393).
 Respetar el formato y contenido las entradas de logs descritas en los ejercicios, pues son las que se chequean en cada uno de los tests.
 
-## Solución ej 2
+## Solución ej 3
 
-Simplemente modifique el script del ej1 para que los clientes y el servidor usen volumes. 
-
-Por lo que estuve viendo hay una distinción entre named volumes y bind mounts, siendo la segunda lo que está implementeado en este ejercicio, y entiendo que era lo más apropiado. Lo único me queda la duda si había una forma de generar este ejercicio usando named volumes y que efectivamente se pueda actualizar la data dentro del compose si la modificas en el la pc host.
+En este ejercicio lo que hice fue generar un container con la imagen de alpine, que entiendo que es bastante minima, y ejecute un script de bash de manera no interactiva que se ejecuta ni bien se levanta el container, donde primero que nada le instalo netcat por las dudas, y luego usando echo+nc y el operador $() que captura el stdout del comando que ejecutes dentro, valido que la response sea efectivamente el mensaje que había enviado antes, validando el correcto funcionamiento del echo server.
