@@ -189,6 +189,13 @@ Generé un script de Python que vaya generando las lineas del compose. Me inclin
 ```
 chmod +x generar-compose.sh
 ./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
 ```
 
 Ejemplo
