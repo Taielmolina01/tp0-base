@@ -33,7 +33,7 @@ class Server:
             skt = self.__accept_new_connection()
             self.__client_handlers.append(
                 ClientHandler(
-                    skt, self.lottery_monitor, self.server_monitor, self.barrier
+                    skt, self.server_monitor, self.barrier
                 )
             )
             self.__client_threads.append(Thread(target=self.__client_handlers[-1].run))
