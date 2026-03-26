@@ -3,11 +3,12 @@ import logging
 import signal
 import sys
 
+
 class Server:
     def __init__(self, port, listen_backlog):
         # Initialize server socket
         self.__acceptor_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__acceptor_socket.bind(('', port))
+        self.__acceptor_socket.bind(("", port))
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
         self.__client_socket = None
@@ -22,7 +23,7 @@ class Server:
         """
 
         # TODO: Modify this program to handle signal to graceful shutdown
-        # the server 
+        # the server
         while True:
             self.__client_socket = self.__accept_new_connection()
             self.__handle_client_connection()
@@ -41,11 +42,13 @@ class Server:
                 print("Client has disconnected. Closing socket")
                 self.__close_client_socket()
                 return
-            msg = data.rstrip().decode('utf-8')
+            msg = data.rstrip().decode("utf-8")
             addr = self.__client_socket.getpeername()
-            logging.info(f'action: receive_message | result: success | ip: {addr[0]} | msg: {msg}')
+            logging.info(
+                f"action: receive_message | result: success | ip: {addr[0]} | msg: {msg}"
+            )
             # TODO: Modify the send to avoid short-writes
-            self.__client_socket.send("{}\n".format(msg).encode('utf-8'))
+            self.__client_socket.send("{}\n".format(msg).encode("utf-8"))
         except OSError as e:
             logging.error("action: receive_message | result: fail | error: {e}")
         finally:
@@ -61,9 +64,11 @@ class Server:
 
         # Connection arrived
         try:
-            logging.info('action: accept_connections | result: in_progress')
+            logging.info("action: accept_connections | result: in_progress")
             c, addr = self.__acceptor_socket.accept()
-            logging.info(f'action: accept_connections | result: success | ip: {addr[0]}')
+            logging.info(
+                f"action: accept_connections | result: success | ip: {addr[0]}"
+            )
             return c
         except OSError:
             self.__handle_exit()
