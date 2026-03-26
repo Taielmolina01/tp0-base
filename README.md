@@ -186,3 +186,26 @@ Al ser secuencial este ejercicio, al finalizar la ejecución de cada uno de los 
 
 Obviamente agrego métodos para enviar y recibir los winners desde el server y client, respectivamente.
 
+Además agrego dinámicamente en el compose una venv para que el servidor sepa por cuantos clientes debe esperar para ejecutar el sorteo.
+
+## Como correr ej7
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh ${route-to-file.yaml} ${amount-of-clients}
+make docker-compose-up
+```
+
+y se pueden ver los logs con 
+
+```
+make docker-compose-logs
+```
+
+Ejemplo
+
+```
+chmod +x generar-compose.sh
+./generar-compose.sh docker-compose-dev.yaml 2
+make docker-compose-up
+```
