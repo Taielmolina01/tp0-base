@@ -1,19 +1,16 @@
 from common.lottery.lottery import Lottery 
 from threading import Lock
+from common.utils import store_bets, load_bets, has_won
 
 class LotteryMonitor:
     def __init__(self, lottery: Lottery):
-        self.lottery = lottery
+        self.lottery: Lottery = lottery
         self.lock = Lock()
 
-    def check_agency_as_finished(self, agency_number):
+    def check_agency_as_finished(self):
         with self.lock:
-            return self.lottery._check_agency_as_finished(agency_number)
-    
-    def store_bets_per_agency(self, agency_id, bets):
-        with self.lock:
-            self.lottery._store_bets_per_agency(agency_id, bets)
-    
+            return self.lottery._check_agency_as_finished()
+        
     def check_finished(self):
         with self.lock:
             return self.lottery._check_finished()

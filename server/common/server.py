@@ -2,6 +2,7 @@ from common.blocking_socket.blocking_socket import BlockingSocket
 from common.client_handler.client_handler import ClientHandler
 from common.lottery.lottery import Lottery
 from common.lottery.lottery_monitor import LotteryMonitor
+from common.server_monitor.server_monitor import ServerMonitor
 import socket
 import logging
 import signal
@@ -15,10 +16,12 @@ class Server:
         self.__acceptor_socket.listen(listen_backlog)
         signal.signal(signal.SIGTERM, self.__handle_exit_wrapper)
         self.__client_handlers : list[ClientHandler] = []
+        self.__client_threads: list[Thread] = []
         self.lottery_monitor = LotteryMonitor(Lottery(amount_of_clients))
         self.amount_of_clients = amount_of_clients
         self.is_running = True
-        self.barrier = Barrier(amount_of_clients + 1)
+        self.barrier = Barrier(amount_of_clients)
+        self.server_monitor = ServerMonitor()
 
     def run(self):
         """
@@ -28,29 +31,18 @@ class Server:
         communication with a client. After client with communucation
         finishes, servers starts to accept new connections again
         """
-        threads = []
-        while self.is_running and len(self.__client_handlers) < self.amount_of_clients:
+        while self.is_running:
             skt = self.__accept_new_connection()
-            self.__client_handlers.append(ClientHandler(skt, self.lottery_monitor, self.barrier))
-            threads.append(Thread(target=self.__client_handlers[-1].run))
-            threads[-1].start()
+            self.__client_handlers.append(ClientHandler(skt, self.lottery_monitor, self.server_monitor, self.barrier))
+            self.__client_threads.append(Thread(target=self.__client_handlers[-1].run))
+            self.__client_threads[-1].start()
         
-        self.barrier.wait()
         self.lottery_monitor.check_finished()
         self.__handle_query_phase()
 
-        for thread in threads:
+        for thread in self.__client_threads:
             thread.join()
 
-
-    def __handle_query_phase(self):
-        clients_satisfied = 0
-        while clients_satisfied < self.amount_of_clients:
-            for client in self.__client_handlers: 
-                if client.had_received_query_winners():
-                    clients_satisfied += 1
-                    client.inform_agency_result()
-                
     def __accept_new_connection(self):
         """
         Accept new connections

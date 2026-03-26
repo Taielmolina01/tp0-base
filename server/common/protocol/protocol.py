@@ -30,7 +30,7 @@ class Protocol:
             self.socket = BlockingSocket(socket.AF_INET, socket.SOCK_STREAM)
 
     def had_received_query_winners(self):
-        code = self.socket.try_receive_all(1)
+        code = self.socket.receive_all(1)
         if not code:
             return False
         return code[0] == QUERY_WINNERS_CODE

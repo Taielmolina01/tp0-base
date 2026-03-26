@@ -40,18 +40,6 @@ class BlockingSocket:
             bytes_received += len(chunk)
         return b"".join(data)
     
-    def try_receive_all(self, length):
-        self.sock.setblocking(False)
-        try:
-            chunk = self.sock.recv(length)
-            if chunk == b"":
-                raise ConnectionError("socket connection broken while receiving")
-            return chunk
-        except BlockingIOError:
-            return None
-        finally:
-            self.sock.setblocking(True)
-
     def close(self):
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
