@@ -184,7 +184,7 @@ Respetar el formato y contenido las entradas de logs descritas en los ejercicios
 
 En este ejercicio busque como manejar las signals con la standard library de ambos lenguajes, y basandome en ello, plantee dos handlers para cerrar todos los fds. En el caso de Go se tiene que hacer con goroutines+channels porque es la forma de manejar la asincronía que ofrece el mismo. En el caso de Python es menos explícito lo que pasa a nivel async.
 
-## Como correr ej3
+## Como correr ej4
 
 ```
 chmod +x generar-compose.sh
